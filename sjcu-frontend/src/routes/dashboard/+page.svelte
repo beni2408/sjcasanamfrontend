@@ -217,18 +217,19 @@ onMount(() => {
 
   </script>
   
-  <div class="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 p-8 relative overflow-hidden">
+  <div class="min-h-screen bg-gradient-to-br from-white-900 via-white-900 to-white-900 p-8 relative overflow-hidden">
     <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
     
     <!-- HEADER -->
-    <div class="relative bg-gray-800/80 backdrop-blur-xl shadow-2xl rounded-3xl p-6 mb-8 flex justify-between items-center border border-gray-700/50 hover:shadow-indigo-500/20 transition-all duration-300">
+    <div class="relative bg-red-800/80 backdrop-blur-xl shadow-2xl rounded-3xl p-6 mb-8 flex justify-between items-center border border-white-700/50 hover:shadow-indigo-500/20 transition-all duration-300">
       <div class="flex items-center gap-4">
-        <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771231215/SJC_app_logo-2-SJC_reciept_web_logo_2_ww8vbk.png" alt="Logo" class="w-14 h-14" />
+        <!-- <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771231215/SJC_app_logo-2-SJC_reciept_web_logo_2_ww8vbk.png" alt="Logo" class="w-14 h-14" /> -->
+        <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771298703/SJC_app_logo-2-SJC_reciept_web_logo_mfzz4t.png" alt="Logo" class="w-14 h-14" />
         <div>
           <h1 class="text-3xl font-bold text-white">
-            Donation Management
+            St.John's Church Madathuvilai Donation Management
           </h1>
-          <p class="text-sm text-gray-400">St. John's Church</p>
+          <p class="text-sm text-white">St. John's Church</p>
         </div>
       </div>
   
@@ -320,23 +321,23 @@ onMount(() => {
     {/if}
   
     <!-- FILTERS -->
-    <div class="relative bg-gray-800/80 backdrop-blur-xl shadow-xl rounded-3xl p-6 mb-6 border border-gray-700/50">
+    <div class="relative bg-white-800/80 backdrop-blur-xl shadow-xl rounded-3xl p-6 mb-6 border border-white-700/50">
       <div class="flex gap-4 mb-4">
-        <select bind:value={searchType} class="border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200 hover:border-indigo-600">
+        <select bind:value={searchType} class="border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 hover:border-red-600">
           <option value="name">Search by Name</option>
           <option value="receipt">Search by Receipt No</option>
         </select>
         <input
           type="text"
           placeholder={searchType === "name" ? "Search donor..." : "Search receipt number..."}
-          class="flex-1 border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200 placeholder-gray-500 hover:border-indigo-600"
+          class="flex-1 border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 placeholder-black-500 hover:border-red-600"
           on:input={(e) => handleSearch(e.target.value)}
         />
       </div>
 
       <div class="flex gap-3">
         <select
-          class="border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200 hover:border-indigo-600"
+          class="border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 hover:border-red-600"
           on:change={(e) => fetchDonations({ paymentMode: e.target.value })}
         >
           <option value="">All Payments</option>
@@ -345,7 +346,7 @@ onMount(() => {
         </select>
       
         <select
-          class="border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200 hover:border-indigo-600"
+          class="border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 hover:border-red-600"
           on:change={(e) => {
             const value = e.target.value;
             if (!value) return fetchDonations();
@@ -353,7 +354,7 @@ onMount(() => {
             fetchDonations({ sortBy, order });
           }}
         >
-          <option value="">Default Sort</option>
+          <option value="">No Filters</option>
           <option value="donated_amount-desc">Amount High → Low</option>
           <option value="donated_amount-asc">Amount Low → High</option>
           <option value="donationDate-desc">Latest First</option>
@@ -371,31 +372,31 @@ onMount(() => {
       
   
     <!-- DONATION TABLE -->
-    <div class="relative bg-gray-800/80 backdrop-blur-xl shadow-xl rounded-3xl overflow-hidden border border-gray-700/50">
+    <div class="relative bg-white-800/80 backdrop-blur-xl shadow-xl rounded-3xl overflow-hidden border border-gray-700/50">
   
       {#if loading}
-        <p class="p-8 text-gray-400 text-center"><i class="fas fa-spinner fa-spin mr-2"></i>Loading donations...</p>
+        <p class="p-8 text-black-400 text-center"><i class="fas fa-spinner fa-spin mr-2"></i>Loading donations...</p>
       {:else if data?.donations?.length === 0}
-        <p class="p-8 text-gray-400 text-center">No donations found</p>
+        <p class="p-8 text-black-400 text-center">No donations found</p>
       {:else}
         <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
         <table class="w-full">
   
-          <thead class="bg-gradient-to-r from-gray-900/90 to-gray-800/90 border-b-2 border-gray-700 sticky top-0 backdrop-blur-sm">
+          <thead class="bg-gradient-to-r from-red-900/90 to-gray-800/90  sticky top-0 backdrop-blur-sm">
             <tr>
-              <th class="p-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">Name</th>
-              <th class="p-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">Amount</th>
-              <th class="p-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">Mode</th>
-              <th class="p-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">Date</th>
-              <th class="p-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">Actions</th>
+              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Name</th>
+              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Amount</th>
+              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Mode</th>
+              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Date</th>
+              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
   
           <tbody class="divide-y divide-gray-700/50">
             {#each donations as donation}
-              <tr class="hover:bg-gradient-to-r hover:from-indigo-900/30 hover:to-purple-900/30 transition-all duration-200">
-                <td class="p-4 text-sm font-medium text-gray-200">{donation.name}</td>
-                <td class="p-4 text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+              <tr class="hover:bg-gradient-to-r hover:from-red-900/30 hover:to-black-900/30 transition-all duration-200">
+                <td class="p-4 text-sm font-medium text-black-200">{donation.name}</td>
+                <td class="p-4 text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-700">
                   ₹{donation.donated_amount}
                 </td>
                 <td class="p-4 text-sm">
@@ -403,7 +404,7 @@ onMount(() => {
                     {donation.paymentMode}
                   </span>
                 </td>
-                <td class="p-4 text-sm text-gray-400">
+                <td class="p-4 text-sm text-black-400">
                   {new Date(donation.donationDate).toLocaleDateString()}
                 </td>
                 <td class="p-4">
