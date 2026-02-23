@@ -125,19 +125,26 @@ const handleExport = async () => {
 
 const handleAddDonation = async (printAfter = false) => {
   try {
+
+    const payload = {
+      ...formData,
+      paymentmethod: formData.paymentMode   // ⭐⭐⭐⭐⭐ THE FIX
+    };
+
     if (editingId) {
-      await api.put(`/donations/${editingId}`, formData);
+      await api.put(`/donations/${editingId}`, payload);
       editingId = null;
     } else {
-      const res = await api.post("/donations", formData);
+      const res = await api.post("/donations", payload);
       const newDonationId = res.data._id;
-      
+
       if (printAfter) {
         await handlePrint(newDonationId);
       }
     }
-    
+
     showAddForm = false;
+
     formData = {
       name: "",
       address: "",
@@ -149,13 +156,10 @@ const handleAddDonation = async (printAfter = false) => {
       description: "",
       donationDate: new Date().toISOString().split('T')[0]
     };
-    
+
     fetchDashboard();
     fetchDonations();
-    
-    if (!printAfter) {
-      alert(editingId ? "Donation updated successfully!" : "Donation updated successfully!");
-    }
+
   } catch (error) {
     alert("Failed to save donation");
   }
@@ -163,6 +167,7 @@ const handleAddDonation = async (printAfter = false) => {
 
 const handleEdit = (donation) => {
   editingId = donation._id;
+
   formData = {
     name: donation.name,
     address: donation.address,
@@ -172,11 +177,14 @@ const handleEdit = (donation) => {
     paymentMode: donation.paymentMode,
     transactionId: donation.transactionId || "",
     description: donation.description || "",
-    donationDate: new Date(donation.donationDate).toISOString().split('T')[0]
+    receiptNumber: donation.receiptNumber,   // ⭐⭐⭐⭐⭐ FIX
+    donationDate: new Date(donation.donationDate)
+      .toISOString()
+      .split('T')[0]
   };
+
   showAddForm = true;
 };
-
 const handleDelete = async (id) => {
   if (!confirm("Are you sure you want to delete this donation?")) return;
   
@@ -221,15 +229,15 @@ onMount(() => {
     <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
     
     <!-- HEADER -->
-    <div class="relative bg-red-800/80 backdrop-blur-xl shadow-2xl rounded-3xl p-6 mb-8 flex justify-between items-center border border-white-700/50 hover:shadow-indigo-500/20 transition-all duration-300">
+    <div class="relative bg-red-700 backdrop-blur-xl shadow-2xl rounded-3xl p-6 mb-8 flex justify-between items-center border-white-700/50 hover:shadow-indigo-500/20 transition-all duration-300">
       <div class="flex items-center gap-4">
-        <!-- <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771231215/SJC_app_logo-2-SJC_reciept_web_logo_2_ww8vbk.png" alt="Logo" class="w-14 h-14" /> -->
-        <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771298703/SJC_app_logo-2-SJC_reciept_web_logo_mfzz4t.png" alt="Logo" class="w-14 h-14" />
+     
+        <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771417669/SJC_app_logo-2-SJC_reciept_web_logo_5_nysuyc.png" alt="Logo" class="w-14 h-14" />
         <div>
           <h1 class="text-3xl font-bold text-white">
             St.John's Church Madathuvilai Donation Management
           </h1>
-          <p class="text-sm text-white">St. John's Church</p>
+          <p class="text-sm text-white">St. John's Church Paribalana Committee</p>
         </div>
       </div>
   
@@ -242,7 +250,7 @@ onMount(() => {
         </button>
         <button
           on:click={handleLogout}
-          class="bg-gradient-to-r from-red-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-red-500 hover:to-pink-500 shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-red-500/60 hover:scale-105 transition-all duration-300 flex items-center gap-2 font-semibold"
+          class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-red-500 hover:to-pink-500 shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-red-500/60 hover:scale-105 transition-all duration-300 flex items-center gap-2 font-semibold"
         >
           <i class="fas fa-sign-out-alt"></i> Logout
         </button>
@@ -253,7 +261,7 @@ onMount(() => {
     {#if data}
       <div class="relative grid grid-cols-4 gap-6 mb-8">
   
-        <div class="group bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 shadow-xl shadow-cyan-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-300 relative overflow-hidden border border-cyan-500/20">
+        <div class="group bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 shadow-xl shadow-cyan-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-300 relative overflow-hidden  border-cyan-500/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -269,7 +277,7 @@ onMount(() => {
           </div>
         </div>
   
-        <div class="group bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 shadow-xl shadow-emerald-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 relative overflow-hidden border border-emerald-500/20">
+        <div class="group bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 shadow-xl shadow-emerald-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 relative overflow-hidden  border-emerald-500/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -285,7 +293,7 @@ onMount(() => {
           </div>
         </div>
   
-        <div class="group bg-gradient-to-br from-purple-600 via-fuchsia-600 to-pink-700 shadow-xl shadow-purple-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden border border-purple-500/20">
+        <div class="group bg-gradient-to-br from-purple-600 via-fuchsia-600 to-pink-700 shadow-xl shadow-purple-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden  border-purple-500/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -301,7 +309,7 @@ onMount(() => {
           </div>
         </div>
   
-        <div class="group bg-gradient-to-br from-orange-600 via-amber-600 to-yellow-700 shadow-xl shadow-orange-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 relative overflow-hidden border border-orange-500/20">
+        <div class="group bg-gradient-to-br from-red-600 via-red-600 to-gray-700 shadow-xl shadow-orange-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 relative overflow-hidden  border-orange-500/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -321,7 +329,7 @@ onMount(() => {
     {/if}
   
     <!-- FILTERS -->
-    <div class="relative bg-white-800/80 backdrop-blur-xl shadow-xl rounded-3xl p-6 mb-6 border border-white-700/50">
+    <div class="relative bg-white-800/80 backdrop-blur-xl shadow-xl rounded-3xl p-6 mb-6 border  border-white-700/50">
       <div class="flex gap-4 mb-4">
         <select bind:value={searchType} class="border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 hover:border-red-600">
           <option value="name">Search by Name</option>
@@ -386,9 +394,10 @@ onMount(() => {
             <tr>
               <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Name</th>
               <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Amount</th>
-              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Mode</th>
+              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Receipt Number</th>
+              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Payment Method</th>
               <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Date</th>
-              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Actions</th>
+              <th class="p-4 text-center text-xs font-bold text-white uppercase tracking-wider ">Actions</th>
             </tr>
           </thead>
   
@@ -399,9 +408,12 @@ onMount(() => {
                 <td class="p-4 text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-700">
                   ₹{donation.donated_amount}
                 </td>
+                <td class="p-4 text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-900">
+                  {donation.receiptNumber}
+                </td>
                 <td class="p-4 text-sm">
-                  <span class="px-3 py-1 rounded-full text-xs font-semibold {donation.paymentMode === 'UPI' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
-                    {donation.paymentMode}
+                  <span class="px-3 py-1 rounded-full text-xs font-semibold {donation.paymentMode === 'UPI' ? 'bg-purple-500/20 text-purple-700 border border-purple-500/30' : 'bg-purple-100 to-pink-700  border border-purple text-purple-600 via-fuchsia-600 '}">
+                    {donation.paymentMode === 'UPI' ? 'UPI' : 'Cash'}
                   </span>
                 </td>
                 <td class="p-4 text-sm text-black-400">

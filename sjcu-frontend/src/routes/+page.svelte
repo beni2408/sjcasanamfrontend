@@ -40,7 +40,7 @@
   
       <div class="flex flex-col items-center mb-8">
         <div class="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 p-4 rounded-2xl mb-4 border border-indigo-500/30">
-          <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771231215/SJC_app_logo-2-SJC_reciept_web_logo_2_ww8vbk.png" alt="Logo" class="w-24 h-24" />
+          <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771403084/SJC_app_logo-2-SJC_reciept_web_logo_1_qy0x7l.png" alt="Logo" class="w-24 h-24" />
         </div>
         <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-2">
           Admin Login
