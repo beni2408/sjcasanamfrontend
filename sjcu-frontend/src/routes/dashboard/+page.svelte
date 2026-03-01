@@ -2,6 +2,7 @@
     import api from "$lib/api/axios";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import CityAutocomplete from "$lib/CityAutocomplete.svelte";
   
     let data = null;
     let loading = true;
@@ -474,8 +475,8 @@ onMount(() => {
             <input type="number" bind:value={formData.donated_amount} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" required />
           </div>
           <div class="col-span-2">
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Address *</label>
-            <input bind:value={formData.address} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" required />
+            <label class="block text-sm font-semibold text-gray-300 mb-2">Address (City/Town) *</label>
+            <CityAutocomplete bind:value={formData.address} placeholder="Start typing city name..." required />
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-300 mb-2">Phone</label>
