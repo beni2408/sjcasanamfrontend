@@ -129,18 +129,35 @@ const handleAddDonation = async (printAfter = false) => {
 
     const payload = {
       ...formData,
-      paymentmethod: formData.paymentMode   // ⭐⭐⭐⭐⭐ THE FIX
+      paymentmethod: formData.paymentMode
     };
 
     if (editingId) {
       await api.put(`/donations/${editingId}`, payload);
+      
+      if (printAfter) {
+        await handlePrint(editingId);
+      }
+      
       editingId = null;
     } else {
       const res = await api.post("/donations", payload);
-      const newDonationId = res.data._id;
+      const receiptNumber = res.data.donation?.receiptNumber;
 
-      if (printAfter) {
-        await handlePrint(newDonationId);
+      if (printAfter && receiptNumber) {
+        // Wait for n8n to sync to database
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Fetch donations to get the ID
+        const donationsRes = await api.get("/donations", {
+          params: { receiptNumber }
+        });
+        
+        if (donationsRes.data && donationsRes.data.length > 0) {
+          await handlePrint(donationsRes.data[0]._id);
+        } else {
+          alert("Donation saved! Please wait a moment and print from the table.");
+        }
       }
     }
 
@@ -158,10 +175,11 @@ const handleAddDonation = async (printAfter = false) => {
       donationDate: new Date().toISOString().split('T')[0]
     };
 
-    fetchDashboard();
-    fetchDonations();
+    await fetchDashboard();
+    await fetchDonations();
 
   } catch (error) {
+    console.error("Save error:", error);
     alert("Failed to save donation");
   }
 };
