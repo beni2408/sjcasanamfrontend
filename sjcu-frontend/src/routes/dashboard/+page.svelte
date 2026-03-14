@@ -82,6 +82,16 @@ try {
 };
 
 
+
+async function sendEmail(id) {
+  try {
+    await api.post(`/send-email/${id}`);
+
+    alert("Email request sent successfully");
+  } catch (error) {
+    alert("Failed to send email");
+  }
+}
 const handlePDF = async (id) => {
 
 try {
@@ -442,31 +452,37 @@ onMount(() => {
                   <div class="flex gap-2">
                     <button
                       on:click={() => handleEdit(donation)}
-                      class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl hover:from-amber-600/30 hover:to-orange-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
+                      class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 text-amber-900 border border-amber-500/30 px-3 py-2 rounded-xl hover:from-amber-600/30 hover:to-orange-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
                     >
                       <i class="fas fa-edit"></i> Edit
                     </button>
 
                     <button
                       on:click={() => handlePrint(donation._id)}
-                      class="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-blue-400 border border-blue-500/30 px-3 py-2 rounded-xl hover:from-blue-600/30 hover:to-indigo-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
+                      class="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-blue-900 border border-blue-500/30 px-3 py-2 rounded-xl hover:from-blue-600/30 hover:to-indigo-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
                     >
                       <i class="fas fa-print"></i> Print
                     </button>
                   
                     <button
                       on:click={() => handlePDF(donation._id)}
-                      class="bg-gradient-to-r from-emerald-600/20 to-teal-600/20 text-emerald-400 border border-emerald-500/30 px-3 py-2 rounded-xl hover:from-emerald-600/30 hover:to-teal-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
+                      class="bg-gradient-to-r from-emerald-600/20 to-teal-600/20 text-emerald-900 border border-emerald-500/30 px-3 py-2 rounded-xl hover:from-emerald-600/30 hover:to-teal-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
                     >
                       <i class="fas fa-file-pdf"></i> PDF
                     </button>
 
                     <button
                       on:click={() => handleDelete(donation._id)}
-                      class="bg-gradient-to-r from-red-600/20 to-pink-600/20 text-red-400 border border-red-500/30 px-3 py-2 rounded-xl hover:from-red-600/30 hover:to-pink-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
+                      class="bg-gradient-to-r from-red-600/20 to-pink-600/20 text-red-700 border border-red-500/30 px-3 py-2 rounded-xl hover:from-red-600/30 hover:to-pink-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
                     >
                       <i class="fas fa-trash"></i> Delete
                     </button>
+                    <button
+    class="bg-gradient-to-r from-blue-600/20 to-blue-600/20 text-blue-900 border border-blue-500/30 px-3 py-2 rounded-xl hover:from-blue-600/30 hover:to-blue-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
+  on:click={() => sendEmail(donation._id)}
+><i class="fa fa-envelope"></i>
+  Mail receipt
+</button>
                   </div>
                 </td>
               </tr>
