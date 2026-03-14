@@ -24,6 +24,51 @@
       description: "",
       donationDate: new Date().toISOString().split('T')[0]
     };
+
+    let editingEmailRow = null;
+let customEmail = "";
+let sending = false;
+
+async function sendCustomEmail(id) {
+
+if (!customEmail) {
+  alert("Please enter an email address.");
+  return;
+}
+
+if (!validateEmail(customEmail)) {
+  alert("Please enter a valid email address.");
+  return;
+}
+
+try {
+
+  sending = true;
+
+  await api.post(`/send-custom-email/${id}`, {
+    email: customEmail
+  });
+
+  alert("Receipt sent successfully!");
+
+  editingEmailRow = null;
+  customEmail = "";
+
+} catch (error) {
+
+  alert("Failed to send email. Please try again.");
+
+} finally {
+
+  sending = false;
+
+}
+}
+
+function validateEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
   
     const fetchDashboard = async (filters = {}) => {
       loading = true;
@@ -483,6 +528,75 @@ onMount(() => {
 ><i class="fa fa-envelope"></i>
   Mail receipt
 </button>
+
+{#if editingEmailRow === donation._id}
+
+<input
+    type="email"
+    placeholder="Enter email address"
+    bind:value={customEmail}
+    class="w-46 pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-full
+           bg-white shadow-sm
+           focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500
+           transition-all duration-200"
+  />
+
+<!-- SEND BUTTON -->
+<button
+  class="bg-green-600 hover:bg-green-700 text-white p-2 rounded"
+  disabled={sending}
+  on:click={() => sendCustomEmail(donation._id)}
+  title="Send"
+>
+  {#if sending}
+    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="white" stroke-width="4" opacity="0.3"/>
+      <path d="M22 12a10 10 0 00-10-10" stroke="white" stroke-width="4"/>
+    </svg>
+  {:else}
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-4 h-4"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+         stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M3 10l18-7-7 18-2-7-7-4z"/>
+    </svg>
+  {/if}
+</button>
+
+<!-- CANCEL BUTTON -->
+<button
+  class="bg-red-700 hover:bg-red-800 text-white p-2 rounded"
+  title="Cancel"
+  on:click={() => {
+    editingEmailRow = null;
+    customEmail = "";
+  }}
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       class="w-4 h-4"
+       fill="none"
+       viewBox="0 0 24 24"
+       stroke="currentColor"
+       stroke-width="2">
+    <path stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6 18L18 6M6 6l12 12"/>
+  </svg>
+</button>
+
+{:else}
+
+<button
+  class="bg-gradient-to-r from-purple-600/60 to-purple-600/20 text-purple-900 border border-purple-500 px-3 py-2 rounded-xl hover:from-purple-600/30 hover:to-purple-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
+  on:click={() => editingEmailRow = donation._id}
+>
+Send to Others
+</button>
+
+{/if}
                   </div>
                 </td>
               </tr>
