@@ -7,6 +7,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<script src="https://www.google.com/jsapi"></script>
 </svelte:head>
 
 {@render children()}

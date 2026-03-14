@@ -3,6 +3,21 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import CityAutocomplete from "$lib/CityAutocomplete.svelte";
+    import { browser } from "$app/environment";
+
+let transliterate;
+
+onMount(async () => {
+
+  if (browser) {
+
+    const lib = await import("@ai4bharat/indic-transliterate");
+
+    transliterate = lib.transliterate;
+
+  }
+
+});
   
     let data = null;
     let loading = true;
@@ -28,6 +43,30 @@
     let editingEmailRow = null;
 let customEmail = "";
 let sending = false;
+
+let tamilTyping = true;
+
+
+async function handleTamilTyping(event, field) {
+
+if (!tamilTyping || !transliterate) return;
+
+if (event.key === " ") {
+
+  const words = formData[field].trim().split(" ");
+  const lastWord = words.pop();
+
+  if (!lastWord) return;
+
+  const tamilWord = await transliterate(lastWord, "ta");
+
+  formData[field] = words.join(" ") + " " + tamilWord + " ";
+}
+
+}
+
+
+
 
 async function sendCustomEmail(id) {
 
@@ -294,7 +333,8 @@ loading = false;
 
 onMount(() => {
   fetchDashboard();   // 💰 Summary cards
-  fetchDonations();   // 📊 Table data
+  fetchDonations();
+  // 📊 Table data
 });
 
   </script>
@@ -317,7 +357,11 @@ onMount(() => {
   
       <div class="flex gap-3">
         <button
-          on:click={() => { showAddForm = true; editingId = null; }}
+        on:click={() => {
+          showAddForm = true;
+          editingId = null;
+      
+        }}
           class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/60 hover:scale-105 transition-all duration-300 flex items-center gap-2 font-semibold"
         >
           <i class="fas fa-plus"></i> Add Donation
@@ -383,7 +427,7 @@ onMount(() => {
           </div>
         </div>
   
-        <div class="group bg-gradient-to-br from-red-600 via-red-600 to-gray-700 shadow-xl shadow-orange-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 relative overflow-hidden  border-orange-500/20">
+        <div class="group bg-gradient-to-br from-red-600 via-red-600 to-red-400 shadow-xl shadow-orange-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 relative overflow-hidden  border-orange-300/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -496,7 +540,11 @@ onMount(() => {
                 <td class="p-4">
                   <div class="flex gap-2">
                     <button
-                      on:click={() => handleEdit(donation)}
+                      on:click={() => {
+  handleEdit(donation);
+
+ 
+}}
                       class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 text-amber-900 border border-amber-500/30 px-3 py-2 rounded-xl hover:from-amber-600/30 hover:to-orange-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
                     >
                       <i class="fas fa-edit"></i> Edit
@@ -590,9 +638,9 @@ onMount(() => {
 {:else}
 
 <button
-  class="bg-gradient-to-r from-purple-600/60 to-purple-600/20 text-purple-900 border border-purple-500 px-3 py-2 rounded-xl hover:from-purple-600/30 hover:to-purple-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
+  class="bg-gradient-to-r from-purple-600/60 to-purple-600/60 text-white-900 border border-purple-600/60 px-3 py-2 rounded-xl hover:from-purple-600/30 hover:to-purple-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
   on:click={() => editingEmailRow = donation._id}
->
+> <i class="fa-solid fa-envelopes-bulk"></i>
 Send to Others
 </button>
 
@@ -613,10 +661,37 @@ Send to Others
     <div class="fixed inset-0 bg-gradient-to-br from-black/80 via-gray-900/80 to-black/80 flex items-center justify-center z-50 backdrop-blur-lg animate-fadeIn">
       <div class="bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-gray-700/50 animate-slideUp">
         <h2 class="text-4xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400">{editingId ? 'Edit Donation' : 'Add New Donation'}</h2>
+        <div class="flex items-center gap-3 mb-4">
+
+          <label class="text-sm font-semibold text-gray-300">
+          Tamil Typing
+          </label>
+          
+          <input
+            type="checkbox"
+            bind:checked={tamilTyping}
+            class="w-4 h-4"
+            on:change={() => {
+              if (transliterationControl) {
+                transliterationControl.toggleTransliteration();
+              }
+            }}
+          />
+          
+          <span class="text-xs text-gray-400">
+          (Enable Tamil phonetic typing)
+          </span>
+          
+          </div>
         <div class="grid grid-cols-2 gap-5">
           <div>
             <label class="block text-sm font-semibold text-gray-300 mb-2">Name *</label>
-            <input bind:value={formData.name} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" required />
+            <input
+             id="donorName"
+            bind:value={formData.name}
+            on:keyup={(e) => handleTamilTyping(e, "name")}
+            class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
+          />
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-300 mb-2">Amount *</label>
@@ -653,7 +728,13 @@ Send to Others
           {/if}
           <div class="col-span-2">
             <label class="block text-sm font-semibold text-gray-300 mb-2">Description</label>
-            <textarea bind:value={formData.description} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" rows="2"></textarea>
+            <textarea
+            id="donorDescription"
+            bind:value={formData.description}
+            on:keyup={(e) => handleTamilTyping(e, "description")}
+            class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
+            rows="2"
+          ></textarea>
           </div>
         </div>
         <div class="flex gap-3 mt-8">
