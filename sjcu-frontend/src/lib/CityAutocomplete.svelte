@@ -1,10 +1,12 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import citiesData from '$lib/api/Indiadatas/india_post_offices.json';
+  import { tamilTransliterate } from '$lib/tamilTransliteration';
 
   export let value = '';
   export let placeholder = 'Start typing city name...';
   export let required = false;
+  export let tamilTyping = false;
 
   const dispatch = createEventDispatcher();
   
@@ -82,6 +84,16 @@
       showSuggestions = false;
     }, 200);
   };
+
+  const handleTransliterationChange = (nextValue) => {
+    value = nextValue;
+    dispatch('input', value);
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      searchCities(value);
+    }, 300);
+  };
 </script>
 
 <div class="relative">
@@ -93,6 +105,10 @@
     on:input={handleInput}
     on:blur={handleBlur}
     on:focus={() => value && searchCities(value)}
+    use:tamilTransliterate={{
+      enabled: tamilTyping,
+      onChange: handleTransliterationChange
+    }}
     class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
   />
   

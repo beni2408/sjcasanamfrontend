@@ -3,21 +3,7 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import CityAutocomplete from "$lib/CityAutocomplete.svelte";
-    import { browser } from "$app/environment";
-
-let transliterate;
-
-onMount(async () => {
-
-  if (browser) {
-
-    const lib = await import("@ai4bharat/indic-transliterate");
-
-    transliterate = lib.transliterate;
-
-  }
-
-});
+    import { tamilTransliterate } from "$lib/tamilTransliteration";
   
     let data = null;
     let loading = true;
@@ -46,26 +32,12 @@ let sending = false;
 
 let tamilTyping = true;
 
-
-async function handleTamilTyping(event, field) {
-
-if (!tamilTyping || !transliterate) return;
-
-if (event.key === " ") {
-
-  const words = formData[field].trim().split(" ");
-  const lastWord = words.pop();
-
-  if (!lastWord) return;
-
-  const tamilWord = await transliterate(lastWord, "ta");
-
-  formData[field] = words.join(" ") + " " + tamilWord + " ";
+function updateFormField(field, value) {
+  formData = {
+    ...formData,
+    [field]: value
+  };
 }
-
-}
-
-
 
 
 async function sendCustomEmail(id) {
@@ -663,25 +635,20 @@ Send to Others
         <h2 class="text-4xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400">{editingId ? 'Edit Donation' : 'Add New Donation'}</h2>
         <div class="flex items-center gap-3 mb-4">
 
-          <label class="text-sm font-semibold text-gray-300">
-          Tamil Typing
-          </label>
+
+            <label class="text-sm font-semibold text-gray-300">
+              Tamil Typing
+            </label>
           
-          <input
-            type="checkbox"
-            bind:checked={tamilTyping}
-            class="w-4 h-4"
-            on:change={() => {
-              if (transliterationControl) {
-                transliterationControl.toggleTransliteration();
-              }
-            }}
-          />
+            <input
+              type="checkbox"
+              bind:checked={tamilTyping}
+              class="w-4 h-4"
+            />
           
-          <span class="text-xs text-gray-400">
-          (Enable Tamil phonetic typing)
-          </span>
-          
+            <span class="text-xs text-gray-400">
+              (Enable Tamil phonetic typing)
+            </span>
           </div>
         <div class="grid grid-cols-2 gap-5">
           <div>
@@ -689,7 +656,10 @@ Send to Others
             <input
              id="donorName"
             bind:value={formData.name}
-            on:keyup={(e) => handleTamilTyping(e, "name")}
+            use:tamilTransliterate={{
+              enabled: tamilTyping,
+              onChange: (value) => updateFormField("name", value)
+            }}
             class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
           />
           </div>
@@ -699,7 +669,7 @@ Send to Others
           </div>
           <div class="col-span-2">
             <label class="block text-sm font-semibold text-gray-300 mb-2">Address (City/Town) *</label>
-            <CityAutocomplete bind:value={formData.address} placeholder="Start typing city name..." required />
+            <CityAutocomplete bind:value={formData.address} placeholder="Start typing city name..." required tamilTyping={tamilTyping} />
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-300 mb-2">Phone</label>
@@ -731,7 +701,10 @@ Send to Others
             <textarea
             id="donorDescription"
             bind:value={formData.description}
-            on:keyup={(e) => handleTamilTyping(e, "description")}
+            use:tamilTransliterate={{
+              enabled: tamilTyping,
+              onChange: (value) => updateFormField("description", value)
+            }}
             class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
             rows="2"
           ></textarea>
