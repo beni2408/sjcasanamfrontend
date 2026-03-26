@@ -33,19 +33,19 @@
     };
   </script>
   
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 p-4 relative overflow-hidden">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-red-900 to-black p-4 relative overflow-hidden">
     <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
   
-    <div class="relative bg-gray-800/90 backdrop-blur-xl shadow-2xl rounded-3xl p-10 w-full max-w-md border border-gray-700/50">
+    <div class="relative bg-white/5 backdrop-blur-5xl shadow-2xl rounded-3xl p-10 w-full max-w-md ">
   
       <div class="flex flex-col items-center mb-8">
-        <div class="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 p-4 rounded-2xl mb-4 border border-indigo-500/30">
+        <div class="bg-gradient-to-br from-red-600/20 to-white-600/20 p-4 rounded-2xl mb-4 border border-white-500/30">
           <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771403084/SJC_app_logo-2-SJC_reciept_web_logo_1_qy0x7l.png" alt="Logo" class="w-24 h-24" />
         </div>
-        <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-2">
+        <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-400 mb-2">
           Admin Login
         </h1>
-        <p class="text-sm text-gray-400">St. John's Church - Madathuvilai</p>
+        <p class="text-sm text-white opacity-50">St.John's Church Madathuvilai Donation Management</p>
       </div>
   
       {#if error}
@@ -62,7 +62,7 @@
           <input
             type="email"
             bind:value={email}
-            class="w-full border-2 border-gray-700 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all bg-gray-900/50 text-gray-200 placeholder-gray-500"
+            class="w-full border-2 border-gray-700 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/50 transition-all bg-gray-900/50 text-gray-200 placeholder-gray-500"
             placeholder="admin@example.com"
           />
         </div>
@@ -75,7 +75,7 @@
           <input
             type={showPassword ? "text" : "password"}
             bind:value={password}
-            class="w-full border-2 border-gray-700 rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition-all bg-gray-900/50 text-gray-200 placeholder-gray-500"
+            class="w-full border-2 border-gray-700 rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/50 transition-all bg-gray-900/50 text-gray-200 placeholder-gray-500"
             placeholder="Enter your password"
           />
           <button
@@ -91,7 +91,7 @@
       <button
         on:click={handleLogin}
         disabled={loading}
-        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3.5 rounded-xl hover:from-indigo-500 hover:to-purple-500 transition-all shadow-lg shadow-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/60 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg flex items-center justify-center gap-2"
+        class="w-full bg-gradient-to-r from-red-900/50 to-red-600 text-white py-3.5 rounded-xl hover:from-red-500/50 hover:to-red-500/10 transition-all shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-red-500/60 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg flex items-center justify-center gap-2"
       >
         {#if loading}
           <i class="fas fa-spinner fa-spin"></i> Logging in...

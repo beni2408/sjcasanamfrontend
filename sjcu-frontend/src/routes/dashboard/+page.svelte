@@ -67,7 +67,7 @@ try {
 
 } catch (error) {
 
-  alert("Failed to send email. Please try again.");
+  alert(error?.response?.data?.message || "Failed to send email. Please try again.");
 
 } finally {
 
@@ -145,7 +145,7 @@ async function sendEmail(id) {
 
     alert("Email request sent successfully");
   } catch (error) {
-    alert("Failed to send email");
+    alert(error?.response?.data?.message || "Failed to send email");
   }
 }
 const handlePDF = async (id) => {
@@ -153,7 +153,7 @@ const handlePDF = async (id) => {
 try {
 
   const res = await api.get(`/pdf-receipt/${id}`, {
-    responseType: "blob",
+    responseType: "blob"
   });
 
   const url = window.URL.createObjectURL(res.data);
@@ -165,9 +165,32 @@ try {
   document.body.appendChild(link);
   link.click();
   link.remove();
+  window.URL.revokeObjectURL(url);
 
 } catch (error) {
-  alert("Failed to download receipt");
+  let message = "Failed to download receipt";
+
+  try {
+    const errorBlob = error?.response?.data;
+
+    if (errorBlob instanceof Blob) {
+      const text = await errorBlob.text();
+      try {
+        const parsed = JSON.parse(text);
+        message = parsed?.message || text || message;
+      } catch {
+        message = text || message;
+      }
+    } else if (error?.response?.data?.message) {
+      message = error.response.data.message;
+    } else if (error?.message) {
+      message = error.message;
+    }
+  } catch {
+    message = error?.message || message;
+  }
+
+  alert(message);
 }
 };
 
@@ -315,13 +338,13 @@ onMount(() => {
     <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
     
     <!-- HEADER -->
-    <div class="relative bg-red-700 backdrop-blur-xl shadow-2xl rounded-3xl p-6 mb-8 flex justify-between items-center border-white-700/50 hover:shadow-indigo-500/20 transition-all duration-300">
+    <div class="relative bg-gradient-to-br from-red-600 via-red-900 to-red-700 backdrop-blur-xl shadow-2xl rounded-3xl p-6 mb-8 flex justify-between items-center border-white-700/50 hover:shadow-indigo-500/20 transition-all duration-300">
       <div class="flex items-center gap-4">
      
         <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771417669/SJC_app_logo-2-SJC_reciept_web_logo_5_nysuyc.png" alt="Logo" class="w-14 h-14" />
         <div>
           <h1 class="text-3xl font-bold text-white">
-            St.John's Church Madathuvilai Donation Management
+            St.John's Church Madathuvilai Donation Management 
           </h1>
           <p class="text-sm text-white">St. John's Church Paribalana Committee</p>
         </div>
@@ -351,7 +374,7 @@ onMount(() => {
     {#if data}
       <div class="relative grid grid-cols-4 gap-6 mb-8">
   
-        <div class="group bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 shadow-xl shadow-cyan-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-300 relative overflow-hidden  border-cyan-500/20">
+        <div class="group bg-gradient-to-br from-red-600 via-red-900 to-red-700 shadow-xl shadow-cyan-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-300 relative overflow-hidden  border-cyan-500/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -363,11 +386,11 @@ onMount(() => {
             <p class="text-4xl font-extrabold mb-1">
               ₹{data.totalAmount}
             </p>
-            <div class="h-1 w-16 bg-cyan-400/60 rounded-full mt-2"></div>
+            <div class="h-1 w-16 bg-white/20 rounded-full mt-2"></div>
           </div>
         </div>
   
-        <div class="group bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 shadow-xl shadow-emerald-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 relative overflow-hidden  border-emerald-500/20">
+        <div class="group bg-gradient-to-br from-red-600 via-red-900 to-red-700 shadow-xl shadow-emerald-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 relative overflow-hidden  border-emerald-500/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -379,11 +402,11 @@ onMount(() => {
             <p class="text-4xl font-extrabold mb-1">
               ₹{data.todayAmount}
             </p>
-            <div class="h-1 w-16 bg-emerald-400/60 rounded-full mt-2"></div>
+            <div class="h-1 w-16 bg-white/20 rounded-full mt-2"></div>
           </div>
         </div>
   
-        <div class="group bg-gradient-to-br from-purple-600 via-fuchsia-600 to-pink-700 shadow-xl shadow-purple-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden  border-purple-500/20">
+        <div class="group bg-gradient-to-br  from-red-600 via-red-900 to-red-700 shadow-xl shadow-purple-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden  border-purple-500/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -395,11 +418,11 @@ onMount(() => {
             <p class="text-4xl font-extrabold mb-1">
               ₹{data.cashAmount}
             </p>
-            <div class="h-1 w-16 bg-purple-400/60 rounded-full mt-2"></div>
+            <div class="h-1 w-16 bg-white/20 rounded-full mt-2"></div>
           </div>
         </div>
   
-        <div class="group bg-gradient-to-br from-red-600 via-red-600 to-red-400 shadow-xl shadow-orange-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 relative overflow-hidden  border-orange-300/20">
+        <div class="group bg-gradient-to-br  from-red-600 via-red-900 to-red-700 shadow-xl shadow-orange-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 relative overflow-hidden  border-orange-300/20">
           <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
@@ -630,13 +653,13 @@ Send to Others
     </div>
   
     {#if showAddForm}
-    <div class="fixed inset-0 bg-gradient-to-br from-black/80 via-gray-900/80 to-black/80 flex items-center justify-center z-50 backdrop-blur-lg animate-fadeIn">
-      <div class="bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-gray-700/50 animate-slideUp">
-        <h2 class="text-4xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400">{editingId ? 'Edit Donation' : 'Add New Donation'}</h2>
+    <div class="fixed inset-0 bg-gradient-to-br from-black/40 via-black-900/10 to-black/30 flex items-center justify-center z-50 backdrop-blur-lg animate-fadeIn">
+      <div class="bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto border bg-gradient-to-br from-white   to-white animate-slideUp">
+        <h2 class="text-4xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-br from-red-600 via-red-900 to-red-700">{editingId ? 'Edit Donation' : 'Add New Donation'}</h2>
         <div class="flex items-center gap-3 mb-4">
 
 
-            <label class="text-sm font-semibold text-gray-300">
+            <label class="text-sm font-semibold text-black">
               Tamil Typing
             </label>
           
@@ -646,13 +669,13 @@ Send to Others
               class="w-4 h-4"
             />
           
-            <span class="text-xs text-gray-400">
+            <span class="text-xs text-black">
               (Enable Tamil phonetic typing)
             </span>
           </div>
         <div class="grid grid-cols-2 gap-5">
           <div>
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Name *</label>
+            <label class="block text-sm font-semibold text-black mb-2">Name *</label>
             <input
              id="donorName"
             bind:value={formData.name}
@@ -660,44 +683,44 @@ Send to Others
               enabled: tamilTyping,
               onChange: (value) => updateFormField("name", value)
             }}
-            class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
+            class="w-full border-2 border-red-900 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
           />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Amount *</label>
+            <label class="block text-sm font-semibold text-black mb-2">Amount *</label>
             <input type="number" bind:value={formData.donated_amount} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" required />
           </div>
           <div class="col-span-2">
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Address (City/Town) *</label>
+            <label class="block text-sm font-semibold text-black mb-2">Address (City/Town) *</label>
             <CityAutocomplete bind:value={formData.address} placeholder="Start typing city name..." required tamilTyping={tamilTyping} />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Phone</label>
+            <label class="block text-sm font-semibold text-black mb-2">Phone</label>
             <input bind:value={formData.phone} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Email</label>
+            <label class="block text-sm font-semibold text-black mb-2">Email</label>
             <input type="email" bind:value={formData.email} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Payment Mode *</label>
+            <label class="block text-sm font-semibold text-black mb-2">Payment Mode *</label>
             <select bind:value={formData.paymentMode} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200">
               <option value="HAND">Cash</option>
               <option value="UPI">UPI</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Donation Date *</label>
+            <label class="block text-sm font-semibold text-black mb-2">Donation Date *</label>
             <input type="date" bind:value={formData.donationDate} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" required />
           </div>
           {#if formData.paymentMode === "UPI"}
           <div class="col-span-2">
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Transaction ID</label>
+            <label class="block text-sm font-semibold text-black mb-2">Transaction ID</label>
             <input bind:value={formData.transactionId} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" />
           </div>
           {/if}
           <div class="col-span-2">
-            <label class="block text-sm font-semibold text-gray-300 mb-2">Description</label>
+            <label class="block text-sm font-semibold text-black mb-2">Description</label>
             <textarea
             id="donorDescription"
             bind:value={formData.description}
