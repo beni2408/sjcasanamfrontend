@@ -109,7 +109,7 @@
       enabled: tamilTyping,
       onChange: handleTransliterationChange
     }}
-    class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
+    class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black"
   />
   
   {#if loading}
@@ -119,12 +119,12 @@
   {/if}
 
   {#if showSuggestions && suggestions.length > 0}
-    <div class="absolute z-50 w-full mt-1 bg-gray-800 border-2 border-gray-700 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
+    <div class="absolute z-50 w-full mt-1 bg-gray-600 border-2 border-gray-700 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
       {#each suggestions as city}
         <button
           type="button"
           on:click={() => selectCity(city)}
-          class="w-full text-left px-4 py-3 hover:bg-indigo-600/20 text-gray-200 transition-colors duration-150 border-b border-gray-700/50 last:border-b-0"
+          class="w-full text-left px-4 py-3 hover:bg-red-800 text-gray-200 transition-colors duration-150 border-b border-gray-700/50 last:border-b-0"
         >
           {city}
         </button>

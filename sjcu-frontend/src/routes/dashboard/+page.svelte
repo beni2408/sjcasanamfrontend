@@ -525,7 +525,13 @@ onMount(() => {
                   {donation.receiptNumber}
                 </td>
                 <td class="p-4 text-sm">
-                  <span class="px-3 py-1 rounded-full text-xs font-semibold {donation.paymentMode === 'UPI' ? 'bg-purple-500/20 text-purple-700 border border-purple-500/30' : 'bg-purple-100 to-pink-700  border border-purple text-purple-600 via-fuchsia-600 '}">
+                  <span
+                    class={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      donation.paymentMode === 'UPI'
+                        ? 'bg-purple-500/20 text-purple-700 border border-purple-500/30'
+                        : 'bg-purple-100 text-purple-600 border border-purple-300'
+                    }`}
+                  >
                     {donation.paymentMode === 'UPI' ? 'UPI' : 'Cash'}
                   </span>
                 </td>
@@ -683,12 +689,12 @@ Send to Others
               enabled: tamilTyping,
               onChange: (value) => updateFormField("name", value)
             }}
-            class="w-full border-2 border-red-900 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
+            class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black"
           />
           </div>
           <div>
             <label class="block text-sm font-semibold text-black mb-2">Amount *</label>
-            <input type="number" bind:value={formData.donated_amount} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" required />
+            <input type="number" bind:value={formData.donated_amount} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200" required />
           </div>
           <div class="col-span-2">
             <label class="block text-sm font-semibold text-black mb-2">Address (City/Town) *</label>
@@ -696,27 +702,27 @@ Send to Others
           </div>
           <div>
             <label class="block text-sm font-semibold text-black mb-2">Phone</label>
-            <input bind:value={formData.phone} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" />
+            <input bind:value={formData.phone} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white text-black" />
           </div>
           <div>
             <label class="block text-sm font-semibold text-black mb-2">Email</label>
-            <input type="email" bind:value={formData.email} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" />
+            <input type="email" bind:value={formData.email} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black" />
           </div>
           <div>
             <label class="block text-sm font-semibold text-black mb-2">Payment Mode *</label>
-            <select bind:value={formData.paymentMode} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200">
+            <select bind:value={formData.paymentMode} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black">
               <option value="HAND">Cash</option>
               <option value="UPI">UPI</option>
             </select>
           </div>
           <div>
             <label class="block text-sm font-semibold text-black mb-2">Donation Date *</label>
-            <input type="date" bind:value={formData.donationDate} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" required />
+            <input type="date" bind:value={formData.donationDate} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white text-black" required />
           </div>
           {#if formData.paymentMode === "UPI"}
           <div class="col-span-2">
             <label class="block text-sm font-semibold text-black mb-2">Transaction ID</label>
-            <input bind:value={formData.transactionId} class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200" />
+            <input bind:value={formData.transactionId} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white text-black" />
           </div>
           {/if}
           <div class="col-span-2">
@@ -728,13 +734,13 @@ Send to Others
               enabled: tamilTyping,
               onChange: (value) => updateFormField("description", value)
             }}
-            class="w-full border-2 border-gray-700 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-gray-900/50 text-gray-200"
+            class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black"
             rows="2"
           ></textarea>
           </div>
         </div>
         <div class="flex gap-3 mt-8">
-          <button on:click={() => handleAddDonation(false)} class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/60 hover:scale-105 transition-all duration-300 font-semibold">{editingId ? 'Update' : 'Save'}</button>
+          <button on:click={() => handleAddDonation(false)} class="bg-gradient-to-r from-red-600 to-red-900 text-white px-8 py-3 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/60 hover:scale-105 transition-all duration-300 font-semibold">{editingId ? 'Update' : 'Save'}</button>
           {#if !editingId}
           <button on:click={() => handleAddDonation(true)} class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-3 rounded-xl hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/60 hover:scale-105 transition-all duration-300 font-semibold">Save & Print</button>
           {/if}
