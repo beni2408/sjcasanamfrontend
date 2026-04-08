@@ -33,93 +33,172 @@
     };
   </script>
   
-  <div class="min-h-screen flex bg-gray-50">
+  <style>
+    .login-btn {
+      background: linear-gradient(135deg, #991b1b 0%, #b91c1c 50%, #dc2626 100%);
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 4px 20px rgba(185,28,28,0.45), 0 1px 3px rgba(185,28,28,0.3);
+    }
+    .login-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%);
+      box-shadow: 0 8px 28px rgba(185,28,28,0.55), 0 2px 6px rgba(185,28,28,0.35);
+      transform: translateY(-2px);
+    }
+    .login-btn:active:not(:disabled) { transform: translateY(0); }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .input-wrap { position: relative; }
+    .input-field {
+      width: 100%; border: 1.5px solid #e5e7eb; border-radius: 12px;
+      padding: 13px 16px; font-size: 15px; color: #111827; background: #f9fafb;
+      outline: none; transition: all 0.2s; box-sizing: border-box; font-family: inherit;
+    }
+    .input-field:focus { border-color: #b91c1c; background: #fff; box-shadow: 0 0 0 4px rgba(185,28,28,0.1); }
+    .input-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:14px; pointer-events:none; }
+    .input-field.has-icon { padding-left:42px; }
+    .input-field.has-toggle { padding-right:44px; }
+    .toggle-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#9ca3af; cursor:pointer; padding:4px; display:flex; align-items:center; }
+    .toggle-btn:hover { color:#6b7280; }
+    .deco-circle { position:absolute; border-radius:50%; }
+    .feature-row { display:flex; align-items:center; gap:14px; padding:10px 0; }
+    .feature-icon-wrap { width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.14); display:flex; align-items:center; justify-content:center; flex-shrink:0; backdrop-filter:blur(4px); }
+    .divider-line { height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); margin:28px 0; }
+  </style>
 
-    <!-- Left decorative panel -->
-    <div class="hidden lg:flex flex-col justify-between w-1/2 p-12 relative overflow-hidden" style="background:#b91c1c;">
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.08),_transparent_60%)]"></div>
-      <div class="absolute bottom-0 left-0 w-80 h-80 bg-red-900/60 rounded-full -translate-x-1/2 translate-y-1/2"></div>
-      <div class="relative z-10">
-        <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771403084/SJC_app_logo-2-SJC_reciept_web_logo_1_qy0x7l.png" alt="Logo" class="w-16 h-16 rounded-2xl mb-10" />
-        <h2 class="text-4xl font-extrabold text-white leading-tight mb-4">
-          St. John's Church<br/>Madathuvilai
-        </h2>
-        <p class="text-red-200 text-base leading-relaxed max-w-sm">
-          Donation management system for the 132nd Asanam Thanksgiving Festival — securely track, receipt, and report all contributions.
-        </p>
-      </div>
-      <p class="relative z-10 text-red-300 text-xs">St. John's Church Paribalana Committee</p>
-    </div>
+  <div style="min-height:100vh; display:flex; background:#f3f4f6; font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
 
-    <!-- Right login panel -->
-    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 px-6 py-12">
-      <div class="w-full max-w-sm">
+    <!-- ── LEFT PANEL ── -->
+    <div class="hidden lg:flex" style="width:50%; flex-direction:column; justify-content:space-between; padding:52px 56px; position:relative; overflow:hidden; background:linear-gradient(145deg, #450a0a 0%, #7f1d1d 35%, #991b1b 65%, #b91c1c 100%);">
 
-        <!-- Logo (mobile only) -->
-        <div class="flex items-center gap-3 mb-8 lg:hidden">
-          <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771403084/SJC_app_logo-2-SJC_reciept_web_logo_1_qy0x7l.png" alt="Logo" class="w-10 h-10 rounded-xl" />
-          <span class="font-bold text-gray-800 text-sm">St. John's Church Madathuvilai</span>
+      <!-- Decorative shapes -->
+      <div class="deco-circle" style="width:380px;height:380px;background:rgba(255,255,255,0.05);top:-100px;right:-100px;"></div>
+      <div class="deco-circle" style="width:240px;height:240px;background:rgba(255,255,255,0.06);bottom:40px;left:-80px;"></div>
+      <div class="deco-circle" style="width:140px;height:140px;background:rgba(255,255,255,0.07);bottom:200px;right:80px;"></div>
+      <div class="deco-circle" style="width:60px;height:60px;background:rgba(255,255,255,0.1);top:200px;left:40px;"></div>
+
+      <!-- Top brand -->
+      <div style="position:relative;z-index:10;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:56px;">
+          <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771403084/SJC_app_logo-2-SJC_reciept_web_logo_1_qy0x7l.png" alt="Logo"
+               style="width:54px;height:54px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,0.35);border:2px solid rgba(255,255,255,0.2);" />
+          <div>
+            <div style="color:rgba(255,255,255,0.55);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px;">St. John's Church</div>
+            <div style="color:#fff;font-size:16px;font-weight:800;letter-spacing:-0.2px;">Madathuvilai</div>
+          </div>
         </div>
 
-        <h1 class="text-2xl font-bold mb-1" style="color:#b91c1c;">Welcome back</h1>
-        <p class="text-sm text-gray-400 mb-8">Sign in to your admin account</p>
+        <h2 style="font-size:40px;font-weight:900;color:#fff;line-height:1.1;margin:0 0 18px;letter-spacing:-1px;">
+          Donation<br/>Management<br/>System
+        </h2>
+        <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.75;max-width:310px;margin-bottom:36px;">
+          132nd Asanam Thanksgiving Festival — securely track, receipt, and report all contributions.
+        </p>
+
+        <div class="divider-line"></div>
+
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div class="feature-row">
+            <div class="feature-icon-wrap"><i class="fas fa-receipt" style="font-size:14px;color:#fca5a5;"></i></div>
+            <span style="color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;">Instant receipt generation &amp; printing</span>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon-wrap"><i class="fas fa-chart-bar" style="font-size:14px;color:#fca5a5;"></i></div>
+            <span style="color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;">Real-time donation analytics</span>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon-wrap"><i class="fas fa-envelope" style="font-size:14px;color:#fca5a5;"></i></div>
+            <span style="color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;">Automated email notifications</span>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon-wrap"><i class="fas fa-file-excel" style="font-size:14px;color:#fca5a5;"></i></div>
+            <span style="color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;">Excel export for reporting</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom footer -->
+      <div style="position:relative;z-index:10;border-top:1px solid rgba(255,255,255,0.12);padding-top:20px;">
+        <p style="color:rgba(255,255,255,0.4);font-size:12px;margin:0;">© 2025 St. John's Church Paribalana Committee</p>
+      </div>
+    </div>
+
+    <!-- ── RIGHT PANEL ── -->
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; background:#fff;">
+      <div style="width:100%;max-width:380px;">
+
+        <!-- Mobile logo -->
+        <div class="lg:hidden" style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
+          <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771403084/SJC_app_logo-2-SJC_reciept_web_logo_1_qy0x7l.png" alt="Logo"
+               style="width:42px;height:42px;border-radius:11px;" />
+          <span style="font-weight:800;color:#111827;font-size:15px;">St. John's Church Madathuvilai</span>
+        </div>
+
+        <!-- Header badge + title -->
+        <div style="margin-bottom:36px;">
+          <div style="display:inline-flex;align-items:center;gap:7px;background:#fef2f2;border:1px solid #fecaca;border-radius:20px;padding:5px 14px;margin-bottom:18px;">
+            <div style="width:7px;height:7px;border-radius:50%;background:#b91c1c;animation:pulse 2s infinite;"></div>
+            <span style="font-size:11px;font-weight:700;color:#b91c1c;letter-spacing:0.08em;text-transform:uppercase;">Admin Portal</span>
+          </div>
+          <h1 style="font-size:30px;font-weight:900;color:#111827;margin:0 0 10px;letter-spacing:-0.8px;">Welcome back</h1>
+          <p style="font-size:15px;color:#6b7280;margin:0;">Sign in to continue to your dashboard</p>
+        </div>
 
         {#if error}
-          <div class="flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-5">
-            <i class="fas fa-exclamation-circle shrink-0"></i>
+          <div style="display:flex;align-items:flex-start;gap:10px;background:#fef2f2;border:1.5px solid #fca5a5;color:#b91c1c;font-size:14px;padding:13px 16px;border-radius:12px;margin-bottom:22px;">
+            <i class="fas fa-circle-exclamation" style="margin-top:1px;flex-shrink:0;"></i>
             <span>{error}</span>
           </div>
         {/if}
 
-        <div class="space-y-4">
+        <div style="display:flex;flex-direction:column;gap:20px;">
           <div>
-            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Email Address</label>
-            <div class="relative">
-              <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-              <input
-                type="email"
-                bind:value={email}
+            <label for="login-email" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;letter-spacing:0.01em;">Email Address</label>
+            <div class="input-wrap">
+              <i class="fas fa-envelope input-icon"></i>
+              <input id="login-email" type="email" bind:value={email}
                 on:keydown={(e) => e.key === 'Enter' && handleLogin()}
-                class="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all"
+                class="input-field has-icon"
                 placeholder="admin@sjcmadathuvilai.in"
               />
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Password</label>
-            <div class="relative">
-              <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-              <input
-                type={showPassword ? "text" : "password"}
-                bind:value={password}
+            <label for="login-password" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;letter-spacing:0.01em;">Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock input-icon"></i>
+              <input id="login-password" type={showPassword ? "text" : "password"} bind:value={password}
                 on:keydown={(e) => e.key === 'Enter' && handleLogin()}
-                class="w-full border border-gray-200 rounded-lg pl-9 pr-10 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all"
+                class="input-field has-icon has-toggle"
                 placeholder="••••••••"
               />
-              <button
-                type="button"
-                title={showPassword ? 'Hide password' : 'Show password'}
+              <button type="button" title={showPassword ? 'Hide password' : 'Show password'}
                 on:click={() => showPassword = !showPassword}
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <i class="fas {showPassword ? 'fa-eye-slash' : 'fa-eye'} text-xs"></i>
+                class="toggle-btn">
+                <i class="fas {showPassword ? 'fa-eye-slash' : 'fa-eye'}" style="font-size:15px;"></i>
               </button>
             </div>
           </div>
         </div>
 
-        <button
-          on:click={handleLogin}
-          disabled={loading}
-          class="w-full mt-6 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg shadow-sm transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 text-sm" style="background:#b91c1c;"
-        >
+        <button on:click={handleLogin} disabled={loading} class="login-btn"
+          style="width:100%;margin-top:28px;color:#fff;font-size:15px;font-weight:700;padding:15px;border-radius:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;letter-spacing:0.02em;">
           {#if loading}
-            <i class="fas fa-spinner fa-spin text-xs"></i> Signing in...
+            <i class="fas fa-spinner fa-spin"></i> Signing in...
           {:else}
-            <i class="fas fa-sign-in-alt text-xs"></i> Sign In
+            Sign In <i class="fas fa-arrow-right"></i>
           {/if}
         </button>
+
+        <div style="margin-top:28px;display:flex;align-items:center;gap:10px;">
+          <div style="flex:1;height:1px;background:#f3f4f6;"></div>
+          <span style="font-size:12px;color:#d1d5db;">Secure Access</span>
+          <div style="flex:1;height:1px;background:#f3f4f6;"></div>
+        </div>
+
+        <p style="text-align:center;margin-top:16px;font-size:12.5px;color:#9ca3af;">
+          <i class="fas fa-shield-halved" style="margin-right:5px;color:#d1d5db;"></i>
+          St. John's Church Paribalana Committee
+        </p>
 
       </div>
     </div>
