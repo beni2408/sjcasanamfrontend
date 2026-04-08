@@ -20,7 +20,7 @@
       phone: "",
       email: "",
       donated_amount: "",
-      paymentMode: "HAND",
+      paymentMode: "",
       transactionId: "",
       description: "",
       donationDate: new Date().toISOString().split('T')[0]
@@ -258,7 +258,7 @@ const handleAddDonation = async (printAfter = false) => {
       phone: "",
       email: "",
       donated_amount: "",
-      paymentMode: "HAND",
+      paymentMode: "",
       transactionId: "",
       description: "",
       donationDate: new Date().toISOString().split('T')[0]
@@ -334,421 +334,396 @@ onMount(() => {
 
   </script>
   
-  <div class="min-h-screen bg-gradient-to-br from-white-900 via-white-900 to-white-900 p-8 relative overflow-hidden">
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-    
-    <!-- HEADER -->
-    <div class="relative bg-gradient-to-br from-red-600 via-red-900 to-red-700 backdrop-blur-xl shadow-2xl rounded-3xl p-6 mb-8 flex justify-between items-center border-white-700/50 hover:shadow-indigo-500/20 transition-all duration-300">
-      <div class="flex items-center gap-4">
-     
-        <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771417669/SJC_app_logo-2-SJC_reciept_web_logo_5_nysuyc.png" alt="Logo" class="w-14 h-14" />
-        <div>
-          <h1 class="text-3xl font-bold text-white">
-            St.John's Church Madathuvilai Donation Management 
-          </h1>
-          <p class="text-sm text-white">St. John's Church Paribalana Committee</p>
-        </div>
-      </div>
-  
-      <div class="flex gap-3">
-        <button
-        on:click={() => {
-          showAddForm = true;
-          editingId = null;
-      
-        }}
-          class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/60 hover:scale-105 transition-all duration-300 flex items-center gap-2 font-semibold"
-        >
-          <i class="fas fa-plus"></i> Add Donation
-        </button>
-        <button
-          on:click={handleLogout}
-          class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-red-500 hover:to-pink-500 shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-red-500/60 hover:scale-105 transition-all duration-300 flex items-center gap-2 font-semibold"
-        >
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-      </div>
-    </div>
-  
-    <!-- SUMMARY CARDS -->
-    {#if data}
-      <div class="relative grid grid-cols-4 gap-6 mb-8">
-  
-        <div class="group bg-gradient-to-br from-red-600 via-red-900 to-red-700 shadow-xl shadow-cyan-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-300 relative overflow-hidden  border-cyan-500/20">
-          <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-cyan-100 text-sm font-semibold uppercase tracking-wide">Total Amount</p>
-              <div class="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
-                <i class="fas fa-coins text-2xl"></i>
-              </div>
-            </div>
-            <p class="text-4xl font-extrabold mb-1">
-              ₹{data.totalAmount}
-            </p>
-            <div class="h-1 w-16 bg-white/20 rounded-full mt-2"></div>
+  <style>
+    .field-label { font-size: 11px; font-weight: 600; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: block; }
+    .field-input { width: 100%; border: 1.5px solid #d1d1d6; border-radius: 10px; padding: 10px 14px; font-size: 15px; color: #1d1d1f; background: #fff; outline: none; transition: border-color 0.15s, box-shadow 0.15s; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .field-input:focus { border-color: #b91c1c; box-shadow: 0 0 0 3px rgba(185,28,28,0.12); }
+.btn-add:hover { background: #991b1b !important; }
+    .btn-cancel:hover { background: #f5f5f7 !important; }
+    .btn-edit:hover { background: #fef3c7 !important; }
+    .btn-print:hover { background: #dbeafe !important; }
+    .btn-pdf:hover { background: #dcfce7 !important; }
+    .btn-delete:hover { background: #ffe4e6 !important; }
+    .btn-mail:hover { background: #e0e7ff !important; }
+    .btn-mail2:hover { background: #f3e8ff !important; }
+    .table-row:hover { background: #fff8f8 !important; }
+  </style>
+
+  <div class="min-h-screen" style="background:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+
+    <!-- ── NAVBAR ── -->
+    <header style="background:#fff; border-bottom:2px solid #b91c1c; position:sticky; top:0; z-index:40; box-shadow:0 2px 8px rgba(185,28,28,0.08);">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="height:60px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1771417669/SJC_app_logo-2-SJC_reciept_web_logo_5_nysuyc.png" alt="Logo" style="width:36px;height:36px;border-radius:8px;" />
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#b91c1c;line-height:1.2;">St. John's Church Madathuvilai</div>
+            <div class="hidden sm:block" style="font-size:12px;color:#6e6e73;">Donation Management System</div>
           </div>
         </div>
-  
-        <div class="group bg-gradient-to-br from-red-600 via-red-900 to-red-700 shadow-xl shadow-emerald-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 relative overflow-hidden  border-emerald-500/20">
-          <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-emerald-100 text-sm font-semibold uppercase tracking-wide">Today's Collection</p>
-              <div class="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
-                <i class="fas fa-calendar-day text-2xl"></i>
-              </div>
-            </div>
-            <p class="text-4xl font-extrabold mb-1">
-              ₹{data.todayAmount}
-            </p>
-            <div class="h-1 w-16 bg-white/20 rounded-full mt-2"></div>
-          </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button
+            on:click={() => { showAddForm = true; editingId = null; }}
+            class="btn-add"
+            style="display:inline-flex;align-items:center;gap:7px;background:#b91c1c;color:#fff;font-size:14px;font-weight:600;padding:9px 18px;border-radius:10px;border:none;cursor:pointer;transition:background 0.15s;box-shadow:0 1px 3px rgba(185,28,28,0.3);"
+          >
+            <i class="fas fa-plus" style="font-size:11px;"></i>
+            <span class="hidden sm:inline">Add Donation</span>
+            <span class="sm:hidden">Add</span>
+          </button>
+          <button
+            on:click={handleLogout}
+            style="display:inline-flex;align-items:center;gap:7px;background:#f5f5f7;color:#3a3a3c;font-size:14px;font-weight:600;padding:9px 16px;border-radius:10px;border:1.5px solid #d1d1d6;cursor:pointer;transition:background 0.15s;"
+          >
+            <i class="fas fa-sign-out-alt" style="font-size:11px;"></i>
+            <span class="hidden sm:inline">Logout</span>
+          </button>
         </div>
-  
-        <div class="group bg-gradient-to-br  from-red-600 via-red-900 to-red-700 shadow-xl shadow-purple-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden  border-purple-500/20">
-          <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-purple-100 text-sm font-semibold uppercase tracking-wide">Cash Collection</p>
-              <div class="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
-                <i class="fas fa-money-bill-wave text-2xl"></i>
-              </div>
-            </div>
-            <p class="text-4xl font-extrabold mb-1">
-              ₹{data.cashAmount}
-            </p>
-            <div class="h-1 w-16 bg-white/20 rounded-full mt-2"></div>
-          </div>
-        </div>
-  
-        <div class="group bg-gradient-to-br  from-red-600 via-red-900 to-red-700 shadow-xl shadow-orange-500/20 rounded-3xl p-6 text-white hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 relative overflow-hidden  border-orange-300/20">
-          <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-orange-100 text-sm font-semibold uppercase tracking-wide">UPI Collection</p>
-              <div class="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
-                <i class="fas fa-mobile-alt text-2xl"></i>
-              </div>
-            </div>
-            <p class="text-4xl font-extrabold mb-1">
-              ₹{data.upiAmount}
-            </p>
-            <div class="h-1 w-16 bg-orange-400/60 rounded-full mt-2"></div>
-          </div>
-        </div>
-  
       </div>
-    {/if}
-  
-    <!-- FILTERS -->
-    <div class="relative bg-white-800/80 backdrop-blur-xl shadow-xl rounded-3xl p-6 mb-6 border  border-white-700/50">
-      <div class="flex gap-4 mb-4">
-        <select bind:value={searchType} class="border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-red-700 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 hover:border-red-600">
-          <option value="name">Search by Name</option>
-          <option value="receipt">Search by Receipt No</option>
-        </select>
-        <input
-          type="text"
-          placeholder={searchType === "name" ? "Search donor..." : "Search receipt number..."}
-          class="flex-1 border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 placeholder-black-500 hover:border-red-600"
-          on:input={(e) => handleSearch(e.target.value)}
-        />
+    </header>
+
+    <!-- ── MAIN ── -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7" style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- Page heading -->
+      <div>
+        <h1 style="font-size:26px;font-weight:800;color:#b91c1c;margin:0 0 2px;">Dashboard</h1>
+        <p style="font-size:14px;color:#6e6e73;margin:0;">132nd Asanam Thanksgiving Festival <span style="color:#b91c1c;">·</span> Donation Overview</p>
       </div>
 
-      <div class="flex gap-3">
-        <select
-          class="border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 hover:border-red-600"
-          on:change={(e) => fetchDonations({ paymentMode: e.target.value })}
-        >
-          <option value="">All Payments</option>
-          <option value="HAND">Cash</option>
-          <option value="UPI">UPI</option>
-        </select>
-      
-        <select
-          class="border-2 border-gray-400 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200 hover:border-red-600"
-          on:change={(e) => {
-            const value = e.target.value;
-            if (!value) return fetchDonations();
-            const [sortBy, order] = value.split("-");
-            fetchDonations({ sortBy, order });
-          }}
-        >
-          <option value="">No Filters</option>
-          <option value="donated_amount-desc">Amount High → Low</option>
-          <option value="donated_amount-asc">Amount Low → High</option>
-          <option value="donationDate-desc">Latest First</option>
-          <option value="donationDate-asc">Oldest First</option>
-        </select>
+      <!-- ── STAT CARDS ── -->
+      {#if data}
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <button
-          on:click={handleExport}
-          class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 rounded-xl hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/60 hover:scale-105 transition-all duration-300 ml-auto flex items-center gap-2 font-semibold"
-        >
-          <i class="fas fa-file-excel"></i> Export to Excel
-        </button>
-      </div>
-    </div>
-      
-  
-    <!-- DONATION TABLE -->
-    <div class="relative bg-white-800/80 backdrop-blur-xl shadow-xl rounded-3xl overflow-hidden border border-gray-700/50">
-  
-      {#if loading}
-        <p class="p-8 text-black-400 text-center"><i class="fas fa-spinner fa-spin mr-2"></i>Loading donations...</p>
-      {:else if data?.donations?.length === 0}
-        <p class="p-8 text-black-400 text-center">No donations found</p>
-      {:else}
-        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
-        <table class="w-full">
-  
-          <thead class="bg-gradient-to-r from-red-900/90 to-gray-800/90  sticky top-0 backdrop-blur-sm">
-            <tr>
-              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Name</th>
-              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Amount</th>
-              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Receipt Number</th>
-              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Payment Method</th>
-              <th class="p-4 text-left text-xs font-bold text-white uppercase tracking-wider">Date</th>
-              <th class="p-4 text-center text-xs font-bold text-white uppercase tracking-wider ">Actions</th>
-            </tr>
-          </thead>
-  
-          <tbody class="divide-y divide-gray-700/50">
-            {#each donations as donation}
-              <tr class="hover:bg-gradient-to-r hover:from-red-900/30 hover:to-black-900/30 transition-all duration-200">
-                <td class="p-4 text-sm font-medium text-black-200">{donation.name}</td>
-                <td class="p-4 text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-700">
-                  ₹{donation.donated_amount}
-                </td>
-                <td class="p-4 text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-900">
-                  {donation.receiptNumber}
-                </td>
-                <td class="p-4 text-sm">
-                  <span
-                    class={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      donation.paymentMode === 'UPI'
-                        ? 'bg-purple-500/20 text-purple-700 border border-purple-500/30'
-                        : 'bg-purple-100 text-purple-600 border border-purple-300'
-                    }`}
-                  >
-                    {donation.paymentMode === 'UPI' ? 'UPI' : 'Cash'}
-                  </span>
-                </td>
-                <td class="p-4 text-sm text-black-400">
-                  {new Date(donation.donationDate).toLocaleDateString()}
-                </td>
-                <td class="p-4">
-                  <div class="flex gap-2">
-                    <button
-                      on:click={() => {
-  handleEdit(donation);
+          <div style="background:#fff;border-radius:16px;padding:20px 22px;border:1px solid #e5e5ea;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;align-items:center;gap:16px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#fff1f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-coins" style="font-size:20px;color:#b91c1c;"></i>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Total Collected</div>
+              <div style="font-size:26px;font-weight:800;color:#1d1d1f;line-height:1;">₹{data.totalAmount}</div>
+            </div>
+          </div>
 
- 
-}}
-                      class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 text-amber-900 border border-amber-500/30 px-3 py-2 rounded-xl hover:from-amber-600/30 hover:to-orange-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
-                    >
-                      <i class="fas fa-edit"></i> Edit
-                    </button>
+          <div style="background:#fff;border-radius:16px;padding:20px 22px;border:1px solid #e5e5ea;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;align-items:center;gap:16px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-calendar-day" style="font-size:20px;color:#16a34a;"></i>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Today's Collection</div>
+              <div style="font-size:26px;font-weight:800;color:#1d1d1f;line-height:1;">₹{data.todayAmount}</div>
+            </div>
+          </div>
 
-                    <button
-                      on:click={() => handlePrint(donation._id)}
-                      class="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-blue-900 border border-blue-500/30 px-3 py-2 rounded-xl hover:from-blue-600/30 hover:to-indigo-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
-                    >
-                      <i class="fas fa-print"></i> Print
-                    </button>
-                  
-                    <button
-                      on:click={() => handlePDF(donation._id)}
-                      class="bg-gradient-to-r from-emerald-600/20 to-teal-600/20 text-emerald-900 border border-emerald-500/30 px-3 py-2 rounded-xl hover:from-emerald-600/30 hover:to-teal-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
-                    >
-                      <i class="fas fa-file-pdf"></i> PDF
-                    </button>
+          <div style="background:#fff;border-radius:16px;padding:20px 22px;border:1px solid #e5e5ea;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;align-items:center;gap:16px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-money-bill-wave" style="font-size:20px;color:#7c3aed;"></i>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Cash Collection</div>
+              <div style="font-size:26px;font-weight:800;color:#1d1d1f;line-height:1;">₹{data.cashAmount}</div>
+            </div>
+          </div>
 
-                    <button
-                      on:click={() => handleDelete(donation._id)}
-                      class="bg-gradient-to-r from-red-600/20 to-pink-600/20 text-red-700 border border-red-500/30 px-3 py-2 rounded-xl hover:from-red-600/30 hover:to-pink-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
-                    >
-                      <i class="fas fa-trash"></i> Delete
-                    </button>
-                    <button
-    class="bg-gradient-to-r from-blue-600/20 to-blue-600/20 text-blue-900 border border-blue-500/30 px-3 py-2 rounded-xl hover:from-blue-600/30 hover:to-blue-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
-  on:click={() => sendEmail(donation._id)}
-><i class="fa fa-envelope"></i>
-  Mail receipt
-</button>
+          <div style="background:#fff;border-radius:16px;padding:20px 22px;border:1px solid #e5e5ea;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;align-items:center;gap:16px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-mobile-alt" style="font-size:20px;color:#2563eb;"></i>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">UPI Collection</div>
+              <div style="font-size:26px;font-weight:800;color:#1d1d1f;line-height:1;">₹{data.upiAmount}</div>
+            </div>
+          </div>
 
-{#if editingEmailRow === donation._id}
-
-<input
-    type="email"
-    placeholder="Enter email address"
-    bind:value={customEmail}
-    class="w-46 pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-full
-           bg-white shadow-sm
-           focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500
-           transition-all duration-200"
-  />
-
-<!-- SEND BUTTON -->
-<button
-  class="bg-green-600 hover:bg-green-700 text-white p-2 rounded"
-  disabled={sending}
-  on:click={() => sendCustomEmail(donation._id)}
-  title="Send"
->
-  {#if sending}
-    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" stroke="white" stroke-width="4" opacity="0.3"/>
-      <path d="M22 12a10 10 0 00-10-10" stroke="white" stroke-width="4"/>
-    </svg>
-  {:else}
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="w-4 h-4"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="M3 10l18-7-7 18-2-7-7-4z"/>
-    </svg>
-  {/if}
-</button>
-
-<!-- CANCEL BUTTON -->
-<button
-  class="bg-red-700 hover:bg-red-800 text-white p-2 rounded"
-  title="Cancel"
-  on:click={() => {
-    editingEmailRow = null;
-    customEmail = "";
-  }}
->
-  <svg xmlns="http://www.w3.org/2000/svg"
-       class="w-4 h-4"
-       fill="none"
-       viewBox="0 0 24 24"
-       stroke="currentColor"
-       stroke-width="2">
-    <path stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M6 18L18 6M6 6l12 12"/>
-  </svg>
-</button>
-
-{:else}
-
-<button
-  class="bg-gradient-to-r from-purple-600/60 to-purple-600/60 text-white-900 border border-purple-600/60 px-3 py-2 rounded-xl hover:from-purple-600/30 hover:to-purple-600/30 hover:scale-105 transition-all duration-200 text-sm flex items-center gap-1.5 font-medium shadow-sm"
-  on:click={() => editingEmailRow = donation._id}
-> <i class="fa-solid fa-envelopes-bulk"></i>
-Send to Others
-</button>
-
-{/if}
-                  </div>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-  
-        </table>
         </div>
       {/if}
-  
-    </div>
-  
-    {#if showAddForm}
-    <div class="fixed inset-0 bg-gradient-to-br from-black/40 via-black-900/10 to-black/30 flex items-center justify-center z-50 backdrop-blur-lg animate-fadeIn">
-      <div class="bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto border bg-gradient-to-br from-white   to-white animate-slideUp">
-        <h2 class="text-4xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-br from-red-600 via-red-900 to-red-700">{editingId ? 'Edit Donation' : 'Add New Donation'}</h2>
-        <div class="flex items-center gap-3 mb-4">
 
+      <!-- ── FILTER BAR ── -->
+      <div style="background:#fff;border-radius:14px;border:1px solid #e5e5ea;box-shadow:0 1px 4px rgba(0,0,0,0.05);padding:14px 18px;">
+        <div class="flex flex-wrap items-center gap-3">
 
-            <label class="text-sm font-semibold text-black">
-              Tamil Typing
-            </label>
-          
+          <!-- Search combo -->
+          <div style="display:flex;flex:1;min-width:220px;border:1.5px solid #d1d1d6;border-radius:10px;overflow:hidden;background:#fff;" class="focus-within:ring-2 focus-within:ring-red-600/20">
+            <select bind:value={searchType} style="font-size:13px;color:#3a3a3c;background:#f5f5f7;border-right:1.5px solid #d1d1d6;padding:10px 12px;outline:none;cursor:pointer;">
+              <option value="name">Name</option>
+              <option value="receipt">Receipt No</option>
+            </select>
             <input
-              type="checkbox"
-              bind:checked={tamilTyping}
-              class="w-4 h-4"
+              type="text"
+              placeholder={searchType === "name" ? "Search donor name..." : "Search receipt number..."}
+              style="flex:1;font-size:14px;padding:10px 14px;outline:none;color:#1d1d1f;background:#fff;"
+              on:input={(e) => handleSearch(e.target.value)}
             />
-          
-            <span class="text-xs text-black">
-              (Enable Tamil phonetic typing)
-            </span>
+            <span style="padding:0 14px;display:flex;align-items:center;color:#8e8e93;"><i class="fas fa-search" style="font-size:13px;"></i></span>
           </div>
-        <div class="grid grid-cols-2 gap-5">
-          <div>
-            <label class="block text-sm font-semibold text-black mb-2">Name *</label>
-            <input
-             id="donorName"
-            bind:value={formData.name}
-            use:tamilTransliterate={{
-              enabled: tamilTyping,
-              onChange: (value) => updateFormField("name", value)
+
+          <!-- Payment filter -->
+          <select
+            style="font-size:14px;color:#3a3a3c;border:1.5px solid #d1d1d6;border-radius:10px;padding:10px 14px;background:#fff;outline:none;cursor:pointer;"
+            on:change={(e) => fetchDonations({ paymentMode: e.target.value })}
+          >
+            <option value="">All Payments</option>
+            <option value="HAND">Cash</option>
+            <option value="UPI">UPI</option>
+          </select>
+
+          <!-- Sort filter -->
+          <select
+            style="font-size:14px;color:#3a3a3c;border:1.5px solid #d1d1d6;border-radius:10px;padding:10px 14px;background:#fff;outline:none;cursor:pointer;"
+            on:change={(e) => {
+              const value = e.target.value;
+              if (!value) return fetchDonations();
+              const [sortBy, order] = value.split("-");
+              fetchDonations({ sortBy, order });
             }}
-            class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black"
-          />
+          >
+            <option value="">Sort: Default</option>
+            <option value="donated_amount-desc">Amount: High → Low</option>
+            <option value="donated_amount-asc">Amount: Low → High</option>
+            <option value="donationDate-desc">Date: Latest First</option>
+            <option value="donationDate-asc">Date: Oldest First</option>
+          </select>
+
+          <button
+            on:click={handleExport}
+            style="margin-left:auto;display:inline-flex;align-items:center;gap:8px;background:#15803d;color:#fff;font-size:14px;font-weight:600;padding:10px 20px;border-radius:10px;border:none;cursor:pointer;box-shadow:0 1px 3px rgba(21,128,61,0.3);transition:background 0.15s;"
+          >
+            <i class="fas fa-file-excel" style="font-size:12px;"></i>
+            <span class="hidden sm:inline">Export to Excel</span>
+            <span class="sm:hidden">Export</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- ── DONATIONS TABLE ── -->
+      <div style="background:#fff;border-radius:16px;border:1px solid #e5e5ea;box-shadow:0 1px 4px rgba(0,0,0,0.06);overflow:hidden;">
+
+        <!-- Table toolbar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f2f2f7;">
+          <div style="font-size:16px;font-weight:700;color:#1d1d1f;border-left:3px solid #b91c1c;padding-left:10px;">Donation Records</div>
+          {#if donations.length > 0}
+            <div style="font-size:13px;color:#6e6e73;background:#f5f5f7;padding:4px 12px;border-radius:20px;border:1px solid #e5e5ea;">{donations.length} records</div>
+          {/if}
+        </div>
+
+        {#if loading}
+          <div style="display:flex;align-items:center;justify-content:center;padding:64px 0;gap:12px;color:#8e8e93;">
+            <i class="fas fa-spinner fa-spin" style="font-size:20px;color:#b91c1c;"></i>
+            <span style="font-size:15px;">Loading donations...</span>
+          </div>
+        {:else if donations.length === 0}
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:72px 0;color:#8e8e93;gap:10px;">
+            <i class="fas fa-inbox" style="font-size:40px;color:#d1d1d6;"></i>
+            <div style="font-size:16px;font-weight:600;color:#3a3a3c;">No donations found</div>
+            <div style="font-size:14px;color:#8e8e93;">Try adjusting your search or filters</div>
+          </div>
+        {:else}
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead>
+                <tr style="background:#f5f5f7;border-bottom:1px solid #e5e5ea;">
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.06em;width:44px;">#</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.06em;">Name</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.06em;">Amount</th>
+                  <th class="hidden md:table-cell" style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.06em;">Receipt No.</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.06em;">Payment</th>
+                  <th class="hidden sm:table-cell" style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.06em;">Date</th>
+                  <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:#6e6e73;text-transform:uppercase;letter-spacing:0.06em;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each donations as donation, i}
+                  <tr class="table-row" style="border-bottom:1px solid #f2f2f7;transition:background 0.1s;{i % 2 !== 0 ? 'background:#fafafa;' : 'background:#fff;'}">
+                    <td style="padding:14px 16px;font-size:13px;color:#c7c7cc;font-variant-numeric:tabular-nums;">{i + 1}</td>
+                    <td style="padding:14px 16px;font-size:15px;font-weight:600;color:#1d1d1f;">{donation.name}</td>
+                    <td style="padding:14px 16px;font-size:15px;font-weight:700;color:#b91c1c;">₹{donation.donated_amount}</td>
+                    <td class="hidden md:table-cell" style="padding:14px 16px;">
+                      <span style="font-family:'SF Mono',ui-monospace,monospace;font-size:12px;background:#fffbeb;color:#92400e;border:1px solid #fde68a;padding:3px 8px;border-radius:6px;">{donation.receiptNumber}</span>
+                    </td>
+                    <td style="padding:14px 16px;">
+                      {#if donation.paymentMode === 'UPI'}
+                        <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;padding:4px 10px;border-radius:20px;">
+                          <i class="fas fa-mobile-alt" style="font-size:10px;"></i> UPI
+                        </span>
+                      {:else}
+                        <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:4px 10px;border-radius:20px;">
+                          <i class="fas fa-money-bill" style="font-size:10px;"></i> Cash
+                        </span>
+                      {/if}
+                    </td>
+                    <td class="hidden sm:table-cell" style="padding:14px 16px;font-size:14px;color:#6e6e73;">{new Date(donation.donationDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td style="padding:10px 16px;">
+                      <div style="display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;">
+
+                        <button title="Edit donation" on:click={() => { handleEdit(donation); }}
+                          class="btn-edit"
+                          style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;background:#fffbeb;color:#b45309;border:1.5px solid #fde68a;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.12s;white-space:nowrap;"
+                        ><i class="fas fa-pencil" style="font-size:11px;"></i> Edit</button>
+
+                        <button title="Print receipt" on:click={() => handlePrint(donation._id)}
+                          class="btn-print"
+                          style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;background:#eff6ff;color:#2563eb;border:1.5px solid #bfdbfe;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.12s;white-space:nowrap;"
+                        ><i class="fas fa-receipt" style="font-size:11px;"></i> Print</button>
+
+                        <button title="Download PDF" on:click={() => handlePDF(donation._id)}
+                          class="btn-pdf"
+                          style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;background:#f0fdf4;color:#16a34a;border:1.5px solid #bbf7d0;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.12s;white-space:nowrap;"
+                        ><i class="fas fa-file-arrow-down" style="font-size:11px;"></i> PDF</button>
+
+                        <button title="Mail receipt to donor" on:click={() => sendEmail(donation._id)}
+                          class="btn-mail"
+                          style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;background:#eef2ff;color:#4338ca;border:1.5px solid #c7d2fe;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.12s;white-space:nowrap;"
+                        ><i class="fas fa-paper-plane" style="font-size:11px;"></i> Mail</button>
+
+                        {#if editingEmailRow === donation._id}
+                          <input
+                            type="email"
+                            placeholder="Enter email..."
+                            bind:value={customEmail}
+                            style="font-size:13px;border:1.5px solid #d1d1d6;border-radius:8px;padding:6px 12px;outline:none;width:160px;color:#1d1d1f;"
+                          />
+                          <button title="Send" disabled={sending} on:click={() => sendCustomEmail(donation._id)}
+                            style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;background:#16a34a;color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;">
+                            {#if sending}
+                              <svg class="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="white" stroke-width="4" opacity="0.3"/>
+                                <path d="M22 12a10 10 0 00-10-10" stroke="white" stroke-width="4"/>
+                              </svg>
+                              Sending...
+                            {:else}
+                              <i class="fas fa-paper-plane" style="font-size:11px;"></i> Send
+                            {/if}
+                          </button>
+                          <button title="Cancel" on:click={() => { editingEmailRow = null; customEmail = ""; }}
+                            style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;background:#f5f5f7;color:#3a3a3c;border:1.5px solid #d1d1d6;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;">
+                            <i class="fas fa-xmark" style="font-size:11px;"></i> Cancel
+                          </button>
+                        {:else}
+                          <button title="Send receipt to custom email" on:click={() => editingEmailRow = donation._id}
+                            class="btn-mail2"
+                            style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;background:#faf5ff;color:#7c3aed;border:1.5px solid #ddd6fe;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.12s;white-space:nowrap;"
+                          ><i class="fas fa-share-nodes" style="font-size:11px;"></i> Forward</button>
+                        {/if}
+
+                        <button title="Delete donation" on:click={() => handleDelete(donation._id)}
+                          class="btn-delete"
+                          style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;background:#fff1f2;color:#e11d48;border:1.5px solid #fecdd3;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.12s;white-space:nowrap;"
+                        ><i class="fas fa-trash-can" style="font-size:11px;"></i> Delete</button>
+
+                      </div>
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        {/if}
+      </div>
+
+    </main>
+
+    <!-- ── ADD / EDIT MODAL ── -->
+    {#if showAddForm}
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;">
+      <div style="background:#fff;border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,0.18);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;border:1px solid #e5e5ea;">
+
+        <!-- Modal header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #f2f2f7;">
+          <div>
+            <div style="font-size:18px;font-weight:700;color:#1d1d1f;">{editingId ? 'Edit Donation' : 'New Donation'}</div>
+            <div style="font-size:13px;color:#8e8e93;margin-top:2px;">{editingId ? 'Update the donation details' : 'Record a new donation entry'}</div>
+          </div>
+          <button title="Close" on:click={() => { showAddForm = false; editingId = null; }}
+            style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:#f5f5f7;border:none;color:#6e6e73;cursor:pointer;font-size:13px;">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Tamil toggle -->
+        <div style="padding:14px 24px 0;border-bottom:1px solid #f2f2f7;padding-bottom:14px;">
+          <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;">
+            <input type="checkbox" bind:checked={tamilTyping} style="width:16px;height:16px;accent-color:#b91c1c;" />
+            <span style="font-size:14px;font-weight:600;color:#3a3a3c;">Tamil Phonetic Typing</span>
+            <span style="font-size:13px;color:#8e8e93;">— type English, get Tamil script</span>
+          </label>
+        </div>
+
+        <!-- Form -->
+        <div style="padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="sm:grid-cols-2 grid-cols-1">
+          <div>
+            <label class="field-label">Donor Name *</label>
+            <input id="donorName" bind:value={formData.name}
+              use:tamilTransliterate={{ enabled: tamilTyping, onChange: (value) => updateFormField("name", value) }}
+              class="field-input" style="width:100%;box-sizing:border-box;" />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-black mb-2">Amount *</label>
-            <input type="number" bind:value={formData.donated_amount} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black-200" required />
+            <label class="field-label">Amount (₹) *</label>
+            <div style="position:relative;">
+              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#8e8e93;font-size:15px;font-weight:600;">₹</span>
+              <input type="number" bind:value={formData.donated_amount} required
+                class="field-input" style="padding-left:28px;width:100%;box-sizing:border-box;" />
+            </div>
           </div>
-          <div class="col-span-2">
-            <label class="block text-sm font-semibold text-black mb-2">Address (City/Town) *</label>
+          <div style="grid-column:1/-1;">
+            <label class="field-label">Address (City / Town) *</label>
             <CityAutocomplete bind:value={formData.address} placeholder="Start typing city name..." required tamilTyping={tamilTyping} />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-black mb-2">Phone</label>
-            <input bind:value={formData.phone} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white text-black" />
+            <label class="field-label">Phone</label>
+            <input bind:value={formData.phone} class="field-input" style="width:100%;box-sizing:border-box;" />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-black mb-2">Email</label>
-            <input type="email" bind:value={formData.email} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black" />
+            <label class="field-label">Email</label>
+            <input type="email" bind:value={formData.email} class="field-input" style="width:100%;box-sizing:border-box;" />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-black mb-2">Payment Mode *</label>
-            <select bind:value={formData.paymentMode} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black">
+            <label class="field-label">Payment Mode *</label>
+            <select bind:value={formData.paymentMode} class="field-input" style="width:100%;box-sizing:border-box;cursor:pointer;">
               <option value="HAND">Cash</option>
               <option value="UPI">UPI</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-black mb-2">Donation Date *</label>
-            <input type="date" bind:value={formData.donationDate} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white text-black" required />
+            <label class="field-label">Donation Date *</label>
+            <input type="date" bind:value={formData.donationDate} required class="field-input" style="width:100%;box-sizing:border-box;" />
           </div>
           {#if formData.paymentMode === "UPI"}
-          <div class="col-span-2">
-            <label class="block text-sm font-semibold text-black mb-2">Transaction ID</label>
-            <input bind:value={formData.transactionId} class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white text-black" />
+          <div style="grid-column:1/-1;">
+            <label class="field-label">Transaction ID</label>
+            <input bind:value={formData.transactionId} class="field-input" style="width:100%;box-sizing:border-box;" />
           </div>
           {/if}
-          <div class="col-span-2">
-            <label class="block text-sm font-semibold text-black mb-2">Description</label>
-            <textarea
-            id="donorDescription"
-            bind:value={formData.description}
-            use:tamilTransliterate={{
-              enabled: tamilTyping,
-              onChange: (value) => updateFormField("description", value)
-            }}
-            class="w-full border-1 border-gray-400 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/50 focus:outline-none transition-all duration-200 bg-white-900/50 text-black"
-            rows="2"
-          ></textarea>
+          <div style="grid-column:1/-1;">
+            <label class="field-label">Description</label>
+            <textarea id="donorDescription" bind:value={formData.description} rows="2"
+              use:tamilTransliterate={{ enabled: tamilTyping, onChange: (value) => updateFormField("description", value) }}
+              class="field-input" style="width:100%;box-sizing:border-box;resize:none;"></textarea>
           </div>
         </div>
-        <div class="flex gap-3 mt-8">
-          <button on:click={() => handleAddDonation(false)} class="bg-gradient-to-r from-red-600 to-red-900 text-white px-8 py-3 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/60 hover:scale-105 transition-all duration-300 font-semibold">{editingId ? 'Update' : 'Save'}</button>
+
+        <!-- Modal footer -->
+        <div style="display:flex;align-items:center;gap:10px;padding:16px 24px;border-top:1px solid #f2f2f7;background:#fafafa;border-radius:0 0 20px 20px;">
+          <button on:click={() => handleAddDonation(false)}
+            style="background:#b91c1c;color:#fff;font-size:14px;font-weight:600;padding:11px 24px;border-radius:10px;border:none;cursor:pointer;box-shadow:0 1px 3px rgba(185,28,28,0.3);transition:background 0.15s;">
+            {editingId ? 'Update Donation' : 'Save Donation'}
+          </button>
           {#if !editingId}
-          <button on:click={() => handleAddDonation(true)} class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-3 rounded-xl hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/60 hover:scale-105 transition-all duration-300 font-semibold">Save & Print</button>
+          <button on:click={() => handleAddDonation(true)}
+            style="background:#15803d;color:#fff;font-size:14px;font-weight:600;padding:11px 24px;border-radius:10px;border:none;cursor:pointer;box-shadow:0 1px 3px rgba(21,128,61,0.25);transition:background 0.15s;">
+            Save &amp; Print
+          </button>
           {/if}
-          <button on:click={() => { showAddForm = false; editingId = null; }} class="bg-gray-700 text-gray-300 px-8 py-3 rounded-xl hover:bg-gray-600 hover:scale-105 transition-all duration-300 font-semibold border border-gray-600">Cancel</button>
+          <button on:click={() => { showAddForm = false; editingId = null; }}
+            class="btn-cancel"
+            style="margin-left:auto;font-size:14px;font-weight:600;color:#6e6e73;background:transparent;border:none;cursor:pointer;padding:11px 16px;border-radius:10px;transition:background 0.15s;">
+            Cancel
+          </button>
         </div>
+
       </div>
     </div>
     {/if}
-  
+
   </div>
   
