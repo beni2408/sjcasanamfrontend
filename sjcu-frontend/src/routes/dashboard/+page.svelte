@@ -24,12 +24,16 @@
       paymentMode: "",
       transactionId: "",
       description: "",
+      purpose: "",
       donationDate: new Date().toISOString().split('T')[0]
     };
 
     let editingEmailRow = null;
 let customEmail = "";
 let sending = false;
+
+let showAddPurpose = false;
+let showEditPurpose = false;
 
 let tamilTyping = true;
 
@@ -43,8 +47,11 @@ function resetFormData() {
     paymentMode: "",
     transactionId: "",
     description: "",
+    purpose: "",
     donationDate: new Date().toISOString().split('T')[0]
   };
+  showAddPurpose = false;
+  showEditPurpose = false;
 }
 
 function updateFormField(field, value) {
@@ -240,7 +247,10 @@ const handleAddDonation = async (printAfter = false) => {
 
     const payload = {
       ...formData,
-      paymentmethod: formData.paymentMode
+      paymentmethod: formData.paymentMode,
+      purpose: (editingId ? showEditPurpose : showAddPurpose) && formData.purpose && formData.purpose.trim()
+        ? formData.purpose.trim()
+        : "-"
     };
 
     if (editingId) {
@@ -274,6 +284,8 @@ const handleAddDonation = async (printAfter = false) => {
 
     showAddForm = false;
     showEditForm = false;
+    showAddPurpose = false;
+    showEditPurpose = false;
 
     formData = {
       name: "",
@@ -284,6 +296,7 @@ const handleAddDonation = async (printAfter = false) => {
       paymentMode: "",
       transactionId: "",
       description: "",
+      purpose: "",
       donationDate: new Date().toISOString().split('T')[0]
     };
 
@@ -299,6 +312,9 @@ const handleAddDonation = async (printAfter = false) => {
 const handleEdit = (donation) => {
   editingId = donation._id;
 
+  const editPurposeValue = donation.purpose && donation.purpose !== "-" ? donation.purpose : "";
+  showEditPurpose = !!editPurposeValue;
+
   formData = {
     name: donation.name,
     address: donation.address,
@@ -308,6 +324,7 @@ const handleEdit = (donation) => {
     paymentMode: donation.paymentMode,
     transactionId: donation.transactionId || "",
     description: donation.description || "",
+    purpose: editPurposeValue,
     receiptNumber: donation.receiptNumber,   // ⭐⭐⭐⭐⭐ FIX
     donationDate: new Date(donation.donationDate)
       .toISOString()
@@ -801,7 +818,7 @@ onMount(() => {
               <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-top:1px;">Record a new donation entry</div>
             </div>
           </div>
-          <button title="Close" on:click={() => { showAddForm = false; }} class="modal-close-btn">
+          <button title="Close" on:click={() => { showAddForm = false; showAddPurpose = false; formData.purpose = ""; }} class="modal-close-btn">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -861,6 +878,26 @@ onMount(() => {
           </div>
           {/if}
           <div style="grid-column:1/-1;">
+            {#if showAddPurpose}
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="flex:1;">
+                  <label for="add-purpose" class="field-label">Purpose!</label>
+                  <input id="add-purpose" bind:value={formData.purpose} placeholder="Enter the purpose of donation..."
+                    class="field-input" />
+                </div>
+                <button type="button" title="Remove purpose" on:click={() => { showAddPurpose = false; formData.purpose = ""; }}
+                  style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:#fff1f2;color:#e11d48;border:1.5px solid #fecdd3;cursor:pointer;font-size:13px;flex-shrink:0;margin-top:22px;">
+                  <i class="fas fa-xmark"></i>
+                </button>
+              </div>
+            {:else}
+              <button type="button" on:click={() => { showAddPurpose = true; }}
+                style="display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;background:#f0fdf4;color:#15803d;border:1.5px solid #bbf7d0;cursor:pointer;font-size:13px;font-weight:700;transition:all 0.15s;">
+                <i class="fas fa-tag" style="font-size:11px;"></i> Purpose
+              </button>
+            {/if}
+          </div>
+          <div style="grid-column:1/-1;">
             <label for="add-desc" class="field-label">Description</label>
             <textarea id="add-desc" bind:value={formData.description} rows="2"
               use:tamilTransliterate={{ enabled: tamilTyping, onChange: (value) => updateFormField("description", value) }}
@@ -876,7 +913,7 @@ onMount(() => {
           <button on:click={() => handleAddDonation(true)} class="btn-save-print">
             <i class="fas fa-print" style="margin-right:7px;font-size:13px;"></i>Save &amp; Print
           </button>
-          <button on:click={() => { showAddForm = false; }} class="btn-cancel">Cancel</button>
+          <button on:click={() => { showAddForm = false; showAddPurpose = false; formData.purpose = ""; }} class="btn-cancel">Cancel</button>
         </div>
 
       </div>
@@ -958,6 +995,26 @@ onMount(() => {
             <input id="edit-txn" bind:value={formData.transactionId} class="field-input" />
           </div>
           {/if}
+          <div style="grid-column:1/-1;">
+            {#if showEditPurpose}
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="flex:1;">
+                  <label for="edit-purpose" class="field-label">Purpose!</label>
+                  <input id="edit-purpose" bind:value={formData.purpose} placeholder="Enter the purpose of donation..."
+                    class="field-input" />
+                </div>
+                <button type="button" title="Remove purpose" on:click={() => { showEditPurpose = false; formData.purpose = ""; }}
+                  style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:#fff1f2;color:#e11d48;border:1.5px solid #fecdd3;cursor:pointer;font-size:13px;flex-shrink:0;margin-top:22px;">
+                  <i class="fas fa-xmark"></i>
+                </button>
+              </div>
+            {:else}
+              <button type="button" on:click={() => { showEditPurpose = true; }}
+                style="display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;background:#f0fdf4;color:#15803d;border:1.5px solid #bbf7d0;cursor:pointer;font-size:13px;font-weight:700;transition:all 0.15s;">
+                <i class="fas fa-tag" style="font-size:11px;"></i> Purpose
+              </button>
+            {/if}
+          </div>
           <div style="grid-column:1/-1;">
             <label for="edit-desc" class="field-label">Description</label>
             <textarea id="edit-desc" bind:value={formData.description} rows="2"
