@@ -35,6 +35,24 @@ let sending = false;
 let showAddPurpose = false;
 let showEditPurpose = false;
 
+// ── TOAST SYSTEM ──
+let toasts = [];
+let toastCounter = 0;
+function showToast(message, type = "info") {
+  const id = ++toastCounter;
+  toasts = [...toasts, { id, message, type }];
+  setTimeout(() => { toasts = toasts.filter(t => t.id !== id); }, 3500);
+}
+
+// ── CONFIRM MODAL ──
+let confirmModal = { show: false, message: "", onConfirm: null };
+function showConfirm(message, onConfirm) {
+  confirmModal = { show: true, message, onConfirm };
+}
+function closeConfirm() {
+  confirmModal = { show: false, message: "", onConfirm: null };
+}
+
 let tamilTyping = true;
 
 function resetFormData() {
@@ -65,12 +83,12 @@ function updateFormField(field, value) {
 async function sendCustomEmail(id) {
 
 if (!customEmail) {
-  alert("Please enter an email address.");
+  showToast("Please enter an email address.", "error");
   return;
 }
 
 if (!validateEmail(customEmail)) {
-  alert("Please enter a valid email address.");
+  showToast("Please enter a valid email address.", "error");
   return;
 }
 
@@ -82,14 +100,14 @@ try {
     email: customEmail
   });
 
-  alert("Receipt sent successfully!");
+  showToast("Receipt sent successfully!", "success");
 
   editingEmailRow = null;
   customEmail = "";
 
 } catch (error) {
 
-  alert(error?.response?.data?.message || "Failed to send email. Please try again.");
+  showToast(error?.response?.data?.message || "Failed to send email. Please try again.", "error");
 
 } finally {
 
@@ -162,7 +180,7 @@ try {
   };
 
 } catch (error) {
-  alert("Failed to print receipt");
+  showToast("Failed to print receipt", "error");
 }
 };
 
@@ -172,9 +190,9 @@ async function sendEmail(id) {
   try {
     await api.post(`/send-email/${id}`);
 
-    alert("Email request sent successfully");
+    showToast("Email request sent successfully", "success");
   } catch (error) {
-    alert(error?.response?.data?.message || "Failed to send email");
+    showToast(error?.response?.data?.message || "Failed to send email", "error");
   }
 }
 const handlePDF = async (id) => {
@@ -219,7 +237,7 @@ try {
     message = error?.message || message;
   }
 
-  alert(message);
+  showToast(message, "error");
 }
 };
 
@@ -238,7 +256,7 @@ const handleExport = async () => {
     link.click();
     link.remove();
   } catch (error) {
-    alert("Failed to export data");
+    showToast("Failed to export data", "error");
   }
 };
 
@@ -277,7 +295,7 @@ const handleAddDonation = async (printAfter = false) => {
         if (donationsRes.data && donationsRes.data.length > 0) {
           await handlePrint(donationsRes.data[0]._id);
         } else {
-          alert("Donation saved! Please wait a moment and print from the table.");
+          showToast("Donation saved! Please wait a moment and print from the table.", "info");
         }
       }
     }
@@ -305,7 +323,7 @@ const handleAddDonation = async (printAfter = false) => {
 
   } catch (error) {
     console.error("Save error:", error);
-    alert("Failed to save donation");
+    showToast("Failed to save donation", "error");
   }
 };
 
@@ -334,16 +352,16 @@ const handleEdit = (donation) => {
   showEditForm = true;
 };
 const handleDelete = async (id) => {
-  if (!confirm("Are you sure you want to delete this donation?")) return;
-  
-  try {
-    await api.delete(`/donations/${id}`);
-    fetchDashboard();
-    fetchDonations();
-    alert("Donation deleted successfully!");
-  } catch (error) {
-    alert("Failed to delete donation");
-  }
+  showConfirm("Are you sure you want to delete this donation? This action cannot be undone.", async () => {
+    try {
+      await api.delete(`/donations/${id}`);
+      fetchDashboard();
+      fetchDonations();
+      showToast("Donation deleted successfully!", "success");
+    } catch (error) {
+      showToast("Failed to delete donation", "error");
+    }
+  });
 };
 
 
@@ -388,6 +406,10 @@ onMount(() => {
     @keyframes hero-pulse {
       0%, 100% { box-shadow: 0 0 6px 0 rgba(34,197,94,0.8); opacity: 1; }
       50% { box-shadow: 0 0 16px 4px rgba(34,197,94,0.9); opacity: 0.7; }
+    }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateX(40px) scale(0.95); }
+      to   { opacity: 1; transform: translateX(0)    scale(1); }
     }
 
     /* ── Base typography ── */
@@ -502,6 +524,10 @@ onMount(() => {
 
         <!-- Giant cross watermark -->
         <div style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-size:280px;color:rgba(255,255,255,0.04);line-height:1;pointer-events:none;user-select:none;">✝</div>
+
+        <!-- Logo watermark -->
+        <img src="https://res.cloudinary.com/dusji1fg2/image/upload/v1775385349/SJC_app_logo-2-SJC_reciept_web_logo_6_gvhpza.png" alt=""
+             style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:320px;height:320px;object-fit:contain;opacity:0.13;pointer-events:none;user-select:none;" />
 
         <!-- Decorative orbs -->
         <div style="position:absolute;top:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,100,100,0.12),transparent 70%);pointer-events:none;"></div>
@@ -1035,5 +1061,59 @@ onMount(() => {
     </div>
     {/if}
 
+  <!-- ── TOAST NOTIFICATIONS ── -->
+  <div style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;">
+    {#each toasts as toast (toast.id)}
+      <div style="pointer-events:auto;display:flex;align-items:flex-start;gap:12px;min-width:300px;max-width:380px;padding:14px 18px;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.18),0 2px 8px rgba(0,0,0,0.1);backdrop-filter:blur(12px);animation:toast-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        {toast.type === 'success' ? 'background:linear-gradient(135deg,#14532d,#15803d);border:1px solid rgba(134,239,172,0.3);' :
+         toast.type === 'error'   ? 'background:linear-gradient(135deg,#7f1d1d,#b91c1c);border:1px solid rgba(252,165,165,0.3);' :
+                                    'background:linear-gradient(135deg,#1e3a5f,#1d4ed8);border:1px solid rgba(147,197,253,0.3);'}">
+        <div style="width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+          <i class="fas {toast.type === 'success' ? 'fa-circle-check' : toast.type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info'}" style="font-size:15px;color:#fff;"></i>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">
+            {toast.type === 'success' ? 'Success' : toast.type === 'error' ? 'Error' : 'Info'}
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:#fff;line-height:1.4;">{toast.message}</div>
+        </div>
+        <button title="Dismiss" aria-label="Dismiss notification" on:click={() => toasts = toasts.filter(t => t.id !== toast.id)}
+          style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.7);cursor:pointer;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;margin-top:1px;">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+    {/each}
   </div>
-  
+
+  <!-- ── CONFIRM MODAL ── -->
+  {#if confirmModal.show}
+  <div style="position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);">
+    <div style="background:#fff;border-radius:22px;box-shadow:0 24px 64px rgba(0,0,0,0.25);width:100%;max-width:420px;overflow:hidden;animation:toast-in 0.25s cubic-bezier(0.34,1.56,0.64,1);">
+      <div style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);padding:22px 24px;display:flex;align-items:center;gap:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-triangle-exclamation" style="font-size:18px;color:#fff;"></i>
+        </div>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.2px;">Confirm Delete</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px;">This action is permanent</div>
+        </div>
+      </div>
+      <div style="padding:24px;">
+        <p style="font-size:14.5px;color:#374151;line-height:1.6;margin:0;">{confirmModal.message}</p>
+      </div>
+      <div style="padding:0 24px 22px;display:flex;gap:10px;justify-content:flex-end;">
+        <button on:click={closeConfirm}
+          style="font-size:14px;font-weight:600;color:#6b7280;background:#f9fafb;border:1.5px solid #e5e7eb;padding:10px 20px;border-radius:10px;cursor:pointer;">
+          Cancel
+        </button>
+        <button on:click={() => { const fn = confirmModal.onConfirm; closeConfirm(); fn && fn(); }}
+          style="font-size:14px;font-weight:700;color:#fff;background:linear-gradient(135deg,#991b1b,#b91c1c);border:none;padding:10px 22px;border-radius:10px;cursor:pointer;box-shadow:0 2px 10px rgba(185,28,28,0.4);">
+          <i class="fas fa-trash-can" style="margin-right:7px;font-size:12px;"></i>Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+  {/if}
+
+  </div>
+
