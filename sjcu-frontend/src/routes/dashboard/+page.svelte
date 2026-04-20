@@ -25,7 +25,8 @@
       transactionId: "",
       description: "",
       purpose: "",
-      donationDate: new Date().toISOString().split('T')[0]
+      donationDate: new Date().toISOString().split('T')[0],
+      donorType: "LOCAL"
     };
 
     let editingEmailRow = null;
@@ -66,7 +67,8 @@ function resetFormData() {
     transactionId: "",
     description: "",
     purpose: "",
-    donationDate: new Date().toISOString().split('T')[0]
+    donationDate: new Date().toISOString().split('T')[0],
+    donorType: "LOCAL"
   };
   showAddPurpose = false;
   showEditPurpose = false;
@@ -315,7 +317,8 @@ const handleAddDonation = async (printAfter = false) => {
       transactionId: "",
       description: "",
       purpose: "",
-      donationDate: new Date().toISOString().split('T')[0]
+      donationDate: new Date().toISOString().split('T')[0],
+      donorType: "LOCAL"
     };
 
     await fetchDashboard();
@@ -346,7 +349,8 @@ const handleEdit = (donation) => {
     receiptNumber: donation.receiptNumber,   // ⭐⭐⭐⭐⭐ FIX
     donationDate: new Date(donation.donationDate)
       .toISOString()
-      .split('T')[0]
+      .split('T')[0],
+    donorType: donation.donorType || "LOCAL"
   };
 
   showEditForm = true;
@@ -751,6 +755,15 @@ onMount(() => {
                     <td style="padding:15px 18px;font-size:12px;color:#d1d5db;font-weight:600;font-variant-numeric:tabular-nums;">{i + 1}</td>
                     <td style="padding:15px 18px;">
                       <div style="font-size:15px;font-weight:700;color:#111827;">{donation.name}</div>
+                      {#if donation.donorType === 'OUTSTATION'}
+                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe;padding:2px 8px;border-radius:20px;margin-top:4px;">
+                          <i class="fas fa-location-dot" style="font-size:9px;"></i> Outstation
+                        </span>
+                      {:else if donation.donorType === 'LOCAL'}
+                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:2px 8px;border-radius:20px;margin-top:4px;">
+                          <i class="fas fa-house" style="font-size:9px;"></i> Local
+                        </span>
+                      {/if}
                     </td>
                     <td style="padding:15px 18px;">
                       <span style="font-size:16px;font-weight:800;color:#b91c1c;letter-spacing:-0.3px;">₹{donation.donated_amount}</span>
@@ -894,6 +907,13 @@ onMount(() => {
             </select>
           </div>
           <div>
+            <label for="add-donor-type" class="field-label">Donor Type *</label>
+            <select id="add-donor-type" bind:value={formData.donorType} class="field-input" style="cursor:pointer;">
+              <option value="LOCAL">Local</option>
+              <option value="OUTSTATION">Outstation</option>
+            </select>
+          </div>
+          <div>
             <label for="add-date" class="field-label">Donation Date *</label>
             <input id="add-date" type="date" bind:value={formData.donationDate} required class="field-input" />
           </div>
@@ -1009,6 +1029,13 @@ onMount(() => {
             <select id="edit-payment" bind:value={formData.paymentMode} class="field-input" style="cursor:pointer;">
               <option value="HAND">Cash</option>
               <option value="UPI">UPI</option>
+            </select>
+          </div>
+          <div>
+            <label for="edit-donor-type" class="field-label">Donor Type *</label>
+            <select id="edit-donor-type" bind:value={formData.donorType} class="field-input" style="cursor:pointer;">
+              <option value="LOCAL">Local</option>
+              <option value="OUTSTATION">Outstation</option>
             </select>
           </div>
           <div>
