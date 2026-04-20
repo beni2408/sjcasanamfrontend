@@ -9,6 +9,8 @@
     let loading = true;
     let search = "";
     let searchType = "name";
+    let activeSortBy = "";
+    let activeSortOrder = "desc";
     let debounceTimer;
     let donations = [];
     let currentFilters = {};
@@ -55,6 +57,71 @@ function closeConfirm() {
 }
 
 let tamilTyping = true;
+
+// ── Advanced filter state ──
+let showFilters = false;
+let checkboxPayment = { HAND: false, UPI: false };
+let checkboxDonorType = { LOCAL: false, OUTSTATION: false };
+let filterMinAmount = "";
+let filterMaxAmount = "";
+let filterDateFrom = "";
+let filterDateTo = "";
+let checkboxPurpose = { none: false, with: false };
+
+$: activeFilterCount = [
+  Object.values(checkboxPayment).filter(Boolean).length === 1 ? 1 : 0,
+  Object.values(checkboxDonorType).filter(Boolean).length === 1 ? 1 : 0,
+  filterMinAmount || filterMaxAmount ? 1 : 0,
+  filterDateFrom || filterDateTo ? 1 : 0,
+  Object.values(checkboxPurpose).filter(Boolean).length === 1 ? 1 : 0
+].reduce((a, b) => a + b, 0);
+
+function buildAllFilters() {
+  const params = {};
+  if (search) {
+    if (searchType === "name") params.name = search;
+    else params.receiptNumber = search;
+  }
+  const selPay = Object.entries(checkboxPayment).filter(([,v]) => v).map(([k]) => k);
+  if (selPay.length === 1) params.paymentMode = selPay[0];
+  const selType = Object.entries(checkboxDonorType).filter(([,v]) => v).map(([k]) => k);
+  if (selType.length === 1) params.donorType = selType[0];
+  const selPurpose = Object.entries(checkboxPurpose).filter(([,v]) => v).map(([k]) => k);
+  if (selPurpose.length === 1) params.purposeType = selPurpose[0];
+  if (filterMinAmount) params.minAmount = filterMinAmount;
+  if (filterMaxAmount) params.maxAmount = filterMaxAmount;
+  if (filterDateFrom) params.dateFrom = filterDateFrom;
+  if (filterDateTo) params.dateTo = filterDateTo;
+  if (activeSortBy) { params.sortBy = activeSortBy; params.order = activeSortOrder; }
+  return params;
+}
+
+function clearFilters() {
+  checkboxPayment = { HAND: false, UPI: false };
+  checkboxDonorType = { LOCAL: false, OUTSTATION: false };
+  filterMinAmount = "";
+  filterMaxAmount = "";
+  filterDateFrom = "";
+  filterDateTo = "";
+  checkboxPurpose = { none: false, with: false };
+  fetchDonations(buildAllFilters());
+}
+
+let showDeletedReceipts = false;
+let deletedReceipts = [];
+let loadingDeleted = false;
+
+const fetchDeletedReceipts = async () => {
+  loadingDeleted = true;
+  try {
+    const res = await api.get("/donations/deleted-receipts");
+    deletedReceipts = res.data;
+  } catch (err) {
+    showToast("Failed to load deleted receipts", "error");
+  } finally {
+    loadingDeleted = false;
+  }
+};
 
 function resetFormData() {
   formData = {
@@ -147,22 +214,11 @@ function validateEmail(email) {
     });
   
     const handleSearch = (value) => {
-
-search = value;
-
-clearTimeout(debounceTimer);
-
-debounceTimer = setTimeout(() => {
-
-  const filter = {};
-  if (searchType === "name") {
-    filter.name = search;
-  } else if (searchType === "receipt") {
-    filter.receiptNumber = search;
-  }
-  fetchDonations(filter);
-
-}, 300);
+  search = value;
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    fetchDonations(buildAllFilters());
+  }, 300);
 };
 
 const handlePrint = async (id) => {
@@ -478,6 +534,8 @@ onMount(() => {
     .btn-update:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(180,83,9,0.5); }
     .btn-cancel { font-size: 14px; font-weight: 600; color: #6b7280; background: transparent; border: 1.5px solid #e5e7eb; cursor: pointer; padding: 11px 20px; border-radius: 10px; transition: all 0.2s; margin-left: auto; }
     .btn-cancel:hover { background: #f9fafb; border-color: #d1d5db; color: #374151; }
+    .btn-deleted { background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%); transition: all 0.2s; box-shadow: 0 2px 10px rgba(55,48,163,0.4); }
+    .btn-deleted:hover { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); box-shadow: 0 4px 16px rgba(55,48,163,0.5); transform: translateY(-1px); }
   </style>
 
   <div style="min-height:100vh;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Inter','SF Pro Display','Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
@@ -655,8 +713,10 @@ onMount(() => {
       </div>
 
       <!-- ── FILTER BAR ── -->
-      <div style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 1px 6px rgba(0,0,0,0.05);padding:16px 20px;">
-        <div class="flex flex-wrap items-center gap-3">
+      <div style="background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 1px 6px rgba(0,0,0,0.05);overflow:hidden;">
+
+        <!-- Top row -->
+        <div class="flex flex-wrap items-center gap-3" style="padding:16px 20px;">
 
           <!-- Search combo -->
           <div class="search-wrap">
@@ -672,20 +732,13 @@ onMount(() => {
             <span style="padding:0 14px;display:flex;align-items:center;color:#9ca3af;"><i class="fas fa-magnifying-glass" style="font-size:13px;"></i></span>
           </div>
 
-          <!-- Payment filter -->
-          <select class="filter-select" on:change={(e) => fetchDonations({ paymentMode: e.target.value })}>
-            <option value="">All Payments</option>
-            <option value="HAND">Cash</option>
-            <option value="UPI">UPI</option>
-          </select>
-
-          <!-- Sort filter -->
+          <!-- Sort -->
           <select class="filter-select"
             on:change={(e) => {
-              const value = e.target.value;
-              if (!value) return fetchDonations();
-              const [sortBy, order] = value.split("-");
-              fetchDonations({ sortBy, order });
+              const val = e.target.value;
+              if (!val) { activeSortBy = ""; activeSortOrder = "desc"; }
+              else { [activeSortBy, activeSortOrder] = val.split("-"); }
+              fetchDonations(buildAllFilters());
             }}
           >
             <option value="">Sort: Default</option>
@@ -695,6 +748,17 @@ onMount(() => {
             <option value="donationDate-asc">Date: Oldest First</option>
           </select>
 
+          <!-- Filters toggle -->
+          <button on:click={() => showFilters = !showFilters}
+            style="display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:700;padding:10px 18px;border-radius:10px;cursor:pointer;letter-spacing:0.01em;transition:all 0.2s;
+            {showFilters ? 'background:#fef2f2;color:#b91c1c;border:1.5px solid #fecaca;' : 'background:#f9fafb;color:#374151;border:1.5px solid #e5e7eb;'}">
+            <i class="fas fa-sliders" style="font-size:12px;"></i>
+            Filters
+            {#if activeFilterCount > 0}
+              <span style="display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:10px;background:#b91c1c;color:#fff;font-size:11px;font-weight:800;padding:0 5px;">{activeFilterCount}</span>
+            {/if}
+          </button>
+
           <button on:click={handleExport} class="export-btn"
             style="margin-left:auto;display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:700;padding:10px 22px;border-radius:10px;border:none;cursor:pointer;letter-spacing:0.01em;">
             <i class="fas fa-file-excel" style="font-size:13px;"></i>
@@ -702,7 +766,107 @@ onMount(() => {
             <span class="sm:hidden">Export</span>
           </button>
 
+          <button on:click={() => { showDeletedReceipts = true; fetchDeletedReceipts(); }} class="btn-deleted"
+            style="display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:700;padding:10px 22px;border-radius:10px;border:none;cursor:pointer;letter-spacing:0.01em;">
+            <i class="fas fa-ban" style="font-size:13px;"></i>
+            <span class="hidden sm:inline">Deleted Receipts</span>
+            <span class="sm:hidden">Deleted</span>
+          </button>
+
         </div>
+
+        <!-- ── ADVANCED FILTER PANEL ── -->
+        {#if showFilters}
+        <div style="border-top:1px solid #f3f4f6;background:#fafafa;padding:20px 20px 18px;">
+
+          <!-- Row 1: Payment Mode · Donor Type · Purpose -->
+          <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin-bottom:18px;">
+
+            <div>
+              <div class="field-label">Payment Mode</div>
+              <div style="display:flex;gap:10px;">
+                <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:#374151;background:#fff;border:1.5px solid {checkboxPayment.HAND ? '#15803d' : '#e5e7eb'};padding:8px 14px;border-radius:8px;transition:border-color 0.15s;">
+                  <input type="checkbox" bind:checked={checkboxPayment.HAND} style="width:14px;height:14px;accent-color:#15803d;" />
+                  <i class="fas fa-money-bill" style="font-size:11px;color:#15803d;"></i> Cash
+                </label>
+                <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:#374151;background:#fff;border:1.5px solid {checkboxPayment.UPI ? '#1d4ed8' : '#e5e7eb'};padding:8px 14px;border-radius:8px;transition:border-color 0.15s;">
+                  <input type="checkbox" bind:checked={checkboxPayment.UPI} style="width:14px;height:14px;accent-color:#1d4ed8;" />
+                  <i class="fas fa-mobile-screen-button" style="font-size:11px;color:#1d4ed8;"></i> UPI
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="field-label">Donor Type</div>
+              <div style="display:flex;gap:10px;">
+                <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:#374151;background:#fff;border:1.5px solid {checkboxDonorType.LOCAL ? '#15803d' : '#e5e7eb'};padding:8px 14px;border-radius:8px;transition:border-color 0.15s;">
+                  <input type="checkbox" bind:checked={checkboxDonorType.LOCAL} style="width:14px;height:14px;accent-color:#15803d;" />
+                  <i class="fas fa-house" style="font-size:11px;color:#15803d;"></i> Local
+                </label>
+                <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:#374151;background:#fff;border:1.5px solid {checkboxDonorType.OUTSTATION ? '#7c3aed' : '#e5e7eb'};padding:8px 14px;border-radius:8px;transition:border-color 0.15s;">
+                  <input type="checkbox" bind:checked={checkboxDonorType.OUTSTATION} style="width:14px;height:14px;accent-color:#7c3aed;" />
+                  <i class="fas fa-location-dot" style="font-size:11px;color:#7c3aed;"></i> Outstation
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="field-label">Purpose</div>
+              <div style="display:flex;gap:10px;">
+                <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:#374151;background:#fff;border:1.5px solid {checkboxPurpose.none ? '#f59e0b' : '#e5e7eb'};padding:8px 14px;border-radius:8px;transition:border-color 0.15s;">
+                  <input type="checkbox" bind:checked={checkboxPurpose.none} style="width:14px;height:14px;accent-color:#f59e0b;" />
+                  <i class="fas fa-minus-circle" style="font-size:11px;color:#f59e0b;"></i> No Purpose
+                </label>
+                <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:#374151;background:#fff;border:1.5px solid {checkboxPurpose.with ? '#0891b2' : '#e5e7eb'};padding:8px 14px;border-radius:8px;transition:border-color 0.15s;">
+                  <input type="checkbox" bind:checked={checkboxPurpose.with} style="width:14px;height:14px;accent-color:#0891b2;" />
+                  <i class="fas fa-tag" style="font-size:11px;color:#0891b2;"></i> With Purpose
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Row 2: Amount Range · Date Range · Buttons -->
+          <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;">
+
+            <div>
+              <div class="field-label">Amount Range (₹)</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <input type="number" bind:value={filterMinAmount} placeholder="Min ₹"
+                  class="field-input" style="width:110px;" />
+                <span style="font-size:12px;color:#9ca3af;font-weight:600;">to</span>
+                <input type="number" bind:value={filterMaxAmount} placeholder="Max ₹"
+                  class="field-input" style="width:110px;" />
+              </div>
+            </div>
+
+            <div>
+              <div class="field-label">Donation Date Range</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <input type="date" bind:value={filterDateFrom} class="field-input" style="width:158px;" />
+                <span style="font-size:12px;color:#9ca3af;font-weight:600;">to</span>
+                <input type="date" bind:value={filterDateTo} class="field-input" style="width:158px;" />
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-left:auto;">
+              <button on:click={() => fetchDonations(buildAllFilters())}
+                style="display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:700;padding:10px 22px;border-radius:10px;background:linear-gradient(135deg,#991b1b,#b91c1c);color:#fff;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(185,28,28,0.3);transition:all 0.2s;">
+                <i class="fas fa-magnifying-glass" style="font-size:12px;"></i> Apply Filters
+              </button>
+              {#if activeFilterCount > 0}
+              <button on:click={clearFilters}
+                style="display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;padding:10px 18px;border-radius:10px;background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;cursor:pointer;transition:all 0.2s;">
+                <i class="fas fa-xmark" style="font-size:12px;"></i> Clear
+              </button>
+              {/if}
+            </div>
+
+          </div>
+
+        </div>
+        {/if}
+
       </div>
 
       <!-- ── DONATIONS TABLE ── -->
@@ -736,8 +900,8 @@ onMount(() => {
             <div style="font-size:14px;color:#9ca3af;">Try adjusting your search or filters</div>
           </div>
         {:else}
-          <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;">
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+            <table style="width:100%;min-width:900px;border-collapse:collapse;">
               <thead>
                 <tr style="background:#f9fafb;border-bottom:2px solid #f3f4f6;">
                   <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;width:44px;">#</th>
@@ -1087,6 +1251,105 @@ onMount(() => {
       </div>
     </div>
     {/if}
+
+  <!-- ── DELETED RECEIPTS MODAL ── -->
+  {#if showDeletedReceipts}
+  <div class="modal-overlay" style="align-items:flex-start;padding-top:40px;">
+    <div class="modal-box" style="max-width:860px;">
+
+      <!-- Header -->
+      <div class="modal-header" style="background:linear-gradient(135deg,#1e1b4b 0%,#3730a3 100%);border-radius:22px 22px 0 0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-ban" style="color:#fff;font-size:15px;"></i>
+          </div>
+          <div>
+            <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.3px;">Deleted Receipt Numbers</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-top:1px;">These numbers are permanently retired and will never be reused</div>
+          </div>
+        </div>
+        <button title="Close" on:click={() => showDeletedReceipts = false} class="modal-close-btn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div style="padding:0;">
+        {#if loadingDeleted}
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 0;gap:14px;">
+            <div style="width:44px;height:44px;border-radius:50%;border:3px solid #c7d2fe;border-top-color:#3730a3;animation:spin 0.8s linear infinite;"></div>
+            <span style="font-size:14px;color:#6b7280;">Loading deleted receipts...</span>
+          </div>
+        {:else if deletedReceipts.length === 0}
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:72px 0;gap:12px;">
+            <div style="width:60px;height:60px;border-radius:18px;background:#f9fafb;border:2px dashed #e5e7eb;display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-check-circle" style="font-size:26px;color:#86efac;"></i>
+            </div>
+            <div style="font-size:16px;font-weight:700;color:#374151;">No deleted receipts</div>
+            <div style="font-size:13px;color:#9ca3af;">All receipt numbers are currently active</div>
+          </div>
+        {:else}
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead>
+                <tr style="background:#f5f3ff;border-bottom:2px solid #e9d5ff;">
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">#</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Receipt No.</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Donor</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Amount</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Payment</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Type</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Donation Date</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Deleted On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each deletedReceipts as dr, i}
+                  <tr style="border-bottom:1px solid #f3f4f6;{i % 2 !== 0 ? 'background:#fafafa;' : 'background:#fff;'}">
+                    <td style="padding:13px 16px;font-size:12px;color:#d1d5db;font-weight:600;">{i + 1}</td>
+                    <td style="padding:13px 16px;">
+                      <span style="font-family:'SF Mono',ui-monospace,monospace;font-size:12px;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;padding:4px 10px;border-radius:7px;font-weight:700;text-decoration:line-through;opacity:0.8;">
+                        {dr.receiptNumber}
+                      </span>
+                    </td>
+                    <td style="padding:13px 16px;">
+                      <div style="font-size:14px;font-weight:700;color:#111827;">{dr.name}</div>
+                      <div style="font-size:12px;color:#9ca3af;margin-top:2px;">{dr.address}</div>
+                    </td>
+                    <td style="padding:13px 16px;font-size:15px;font-weight:800;color:#b91c1c;">₹{dr.donated_amount}</td>
+                    <td style="padding:13px 16px;">
+                      {#if dr.paymentMode === 'UPI'}
+                        <span style="font-size:11.5px;font-weight:700;color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;padding:3px 10px;border-radius:20px;">UPI</span>
+                      {:else}
+                        <span style="font-size:11.5px;font-weight:700;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:3px 10px;border-radius:20px;">Cash</span>
+                      {/if}
+                    </td>
+                    <td style="padding:13px 16px;">
+                      {#if dr.donorType === 'OUTSTATION'}
+                        <span style="font-size:11.5px;font-weight:700;color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe;padding:3px 10px;border-radius:20px;">Outstation</span>
+                      {:else}
+                        <span style="font-size:11.5px;font-weight:700;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:3px 10px;border-radius:20px;">Local</span>
+                      {/if}
+                    </td>
+                    <td style="padding:13px 16px;font-size:13px;color:#6b7280;">{new Date(dr.donationDate).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</td>
+                    <td style="padding:13px 16px;">
+                      <div style="font-size:12px;color:#9ca3af;">{new Date(dr.deletedAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</div>
+                      <div style="font-size:11px;color:#c4b5fd;margin-top:1px;">{new Date(dr.deletedAt).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' })}</div>
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:14px 20px;border-top:1px solid #f3f4f6;background:#fafafa;border-radius:0 0 22px 22px;text-align:right;">
+            <span style="font-size:13px;font-weight:600;color:#7c3aed;">{deletedReceipts.length} retired receipt{deletedReceipts.length !== 1 ? 's' : ''}</span>
+          </div>
+        {/if}
+      </div>
+
+    </div>
+  </div>
+  {/if}
 
   <!-- ── TOAST NOTIFICATIONS ── -->
   <div style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;">
