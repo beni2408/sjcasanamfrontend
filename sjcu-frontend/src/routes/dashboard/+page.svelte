@@ -901,15 +901,22 @@ onMount(() => {
           </div>
         {:else}
           <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
-            <table style="width:100%;min-width:900px;border-collapse:collapse;">
+            <table style="width:100%;min-width:1600px;border-collapse:collapse;">
               <thead>
                 <tr style="background:#f9fafb;border-bottom:2px solid #f3f4f6;">
                   <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;width:44px;">#</th>
-                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Donor</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Receipt No.</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Donor Name</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Type</th>
                   <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Amount</th>
-                  <th class="hidden md:table-cell" style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Receipt</th>
                   <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Payment</th>
-                  <th class="hidden sm:table-cell" style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Date</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Transaction ID</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Phone</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Email</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Address</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Purpose</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Description</th>
+                  <th style="padding:13px 18px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Date</th>
                   <th style="padding:13px 18px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;">Actions</th>
                 </tr>
               </thead>
@@ -918,22 +925,22 @@ onMount(() => {
                   <tr class="table-row" style="border-bottom:1px solid #f3f4f6;{i % 2 !== 0 ? 'background:#fafafa;' : 'background:#fff;'}">
                     <td style="padding:15px 18px;font-size:12px;color:#d1d5db;font-weight:600;font-variant-numeric:tabular-nums;">{i + 1}</td>
                     <td style="padding:15px 18px;">
-                      <div style="font-size:15px;font-weight:700;color:#111827;">{donation.name}</div>
+                      <span class="receipt-badge">{donation.receiptNumber}</span>
+                    </td>
+                    <td style="padding:15px 18px;font-size:15px;font-weight:700;color:#111827;white-space:nowrap;">{donation.name}</td>
+                    <td style="padding:15px 18px;">
                       {#if donation.donorType === 'OUTSTATION'}
-                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe;padding:2px 8px;border-radius:20px;margin-top:4px;">
+                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe;padding:2px 8px;border-radius:20px;white-space:nowrap;">
                           <i class="fas fa-location-dot" style="font-size:9px;"></i> Outstation
                         </span>
                       {:else if donation.donorType === 'LOCAL'}
-                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:2px 8px;border-radius:20px;margin-top:4px;">
+                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:2px 8px;border-radius:20px;white-space:nowrap;">
                           <i class="fas fa-house" style="font-size:9px;"></i> Local
                         </span>
                       {/if}
                     </td>
                     <td style="padding:15px 18px;">
-                      <span style="font-size:16px;font-weight:800;color:#b91c1c;letter-spacing:-0.3px;">₹{donation.donated_amount}</span>
-                    </td>
-                    <td class="hidden md:table-cell" style="padding:15px 18px;">
-                      <span class="receipt-badge">{donation.receiptNumber}</span>
+                      <span style="font-size:16px;font-weight:800;color:#b91c1c;letter-spacing:-0.3px;white-space:nowrap;">₹{donation.donated_amount}</span>
                     </td>
                     <td style="padding:15px 18px;">
                       {#if donation.paymentMode === 'UPI'}
@@ -942,9 +949,15 @@ onMount(() => {
                         <span class="payment-cash"><i class="fas fa-money-bill" style="font-size:10px;"></i> Cash</span>
                       {/if}
                     </td>
-                    <td class="hidden sm:table-cell" style="padding:15px 18px;font-size:13px;font-weight:500;color:#6b7280;">{new Date(donation.donationDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                    <td style="padding:10px 18px;">
-                      <div style="display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;">
+                    <td style="padding:15px 18px;font-size:13px;color:#374151;font-family:monospace;">{#if donation.transactionId}{donation.transactionId}{:else}<span style="color:#d1d5db;">—</span>{/if}</td>
+                    <td style="padding:15px 18px;font-size:13px;color:#374151;white-space:nowrap;">{#if donation.phone}{donation.phone}{:else}<span style="color:#d1d5db;">—</span>{/if}</td>
+                    <td style="padding:15px 18px;font-size:13px;color:#374151;">{#if donation.email}{donation.email}{:else}<span style="color:#d1d5db;">—</span>{/if}</td>
+                    <td style="padding:15px 18px;font-size:13px;color:#374151;max-width:180px;">{#if donation.address}{donation.address}{:else}<span style="color:#d1d5db;">—</span>{/if}</td>
+                    <td style="padding:15px 18px;font-size:13px;color:#374151;max-width:150px;">{#if donation.purpose}{donation.purpose}{:else}<span style="color:#d1d5db;">—</span>{/if}</td>
+                    <td style="padding:15px 18px;font-size:13px;color:#374151;max-width:150px;">{#if donation.description}{donation.description}{:else}<span style="color:#d1d5db;">—</span>{/if}</td>
+                    <td style="padding:15px 18px;font-size:13px;font-weight:500;color:#6b7280;white-space:nowrap;">{new Date(donation.donationDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td style="padding:10px 18px;white-space:nowrap;">
+                      <div style="display:flex;align-items:center;justify-content:flex-start;gap:4px;flex-wrap:nowrap;">
 
                         <button title="Edit donation" on:click={() => { handleEdit(donation); }} class="btn-edit">
                           <i class="fas fa-pencil" style="font-size:11px;"></i> Edit
